@@ -1,37 +1,37 @@
 Contributing
 ============
 
-Haystack is open-source and, as such, grows (or shrinks) & improves in part
+Django-Searchstack is open-source and, as such, grows (or shrinks) & improves mostly
 due to the community. Below are some guidelines on how to help with the project.
 
 
 Philosophy
 ----------
 
-* Haystack is BSD-licensed. All contributed code must be either
+* Django-Searchstack is BSD-licensed. All contributed code must be either
   * the original work of the author, contributed under the BSD, or...
   * work taken from another project released under a BSD-compatible license.
 * GPL'd (or similar) works are not eligible for inclusion.
-* Haystack's git master branch should always be stable, production-ready &
+* Django-searchstack's git master branch should always be stable, production-ready &
   passing all tests.
-* Major releases (1.x.x) are commitments to backward-compatibility of the public APIs.
-  Any documented API should ideally not change between major releases.
+* Major releases (x.1.x) are commitments to backward-compatibility of the public APIs.
+  Any documented APIs are not changed for at least 2 major releases.
   The exclusion to this rule is in the event of either a security issue
   or to accommodate changes in Django itself.
-* Minor releases (x.3.x) are for the addition of substantial features or major
-  bugfixes.
-* Patch releases (x.x.4) are for minor features or bugfixes.
+  For any planned API changes/deprecations a RemovedIn<version> warning is
+  added which remains for 2 major releases and after that the change is applied.
+* Minor releases (x.x.2) are for minor features or bugfixes.
 
 
 Guidelines For Reporting An Issue/Feature
 -----------------------------------------
 
 So you've found a bug or have a great idea for a feature. Here's the steps you
-should take to help get it added/fixed in Haystack:
+should take to help get it added/fixed in Django-Searchstack:
 
 * First, check to see if there's an existing issue/pull request for the
-  bug/feature. All issues are at https://github.com/toastdriven/django-haystack/issues
-  and pull reqs are at https://github.com/toastdriven/django-haystack/pulls.
+  bug/feature. All issues and pull requests can be found in GitHub at 
+  https://github.com/django-searchstack/django-searchstack/.
 * If there isn't one there, please file an issue. The ideal report includes:
     * A description of the problem/suggestion.
     * How to recreate the bug.
@@ -47,13 +47,6 @@ should take to help get it added/fixed in Haystack:
   Github has a great guide for writing an effective pull request:
   https://github.com/blog/1943-how-to-write-the-perfect-pull-request
 
-  Instructions for running the tests are at
-  http://django-haystack.readthedocs.org/en/latest/running_tests.html
-
-You might also hop into the IRC channel (`#haystack` on `irc.freenode.net`)
-& raise your question there, as there may be someone who can help you with a
-work-around.
-
 
 Guidelines For Contributing Code
 --------------------------------
@@ -62,7 +55,7 @@ If you're ready to take the plunge & contribute back some code/docs, the
 process should look like:
 
 * Fork the project on GitHub into your own account.
-* Clone your copy of Haystack.
+* Clone your copy.
 * Make a new branch in git & commit your changes there.
 * Push your new branch up to GitHub.
 * Again, ensure there isn't already an issue or pull request out there on it.
@@ -72,7 +65,7 @@ process should look like:
   problem/feature is, versions of your software & referencing any related
   issues/pull requests.
 
-In order to be merged into Haystack, contributions must have the following:
+In order to be merged into Django-Searchstack, contributions must have the following:
 
 * A solid patch that:
     * is clear.
@@ -87,5 +80,5 @@ In order to be merged into Haystack, contributions must have the following:
 * Adds yourself to the AUTHORS file.
 
 If your contribution lacks any of these things, they will have to be added
-by a core contributor before being merged into Haystack proper, which may take
+by a core contributor before being merged into Django-Searchstack proper, which may take
 substantial time for the all-volunteer team to get to.
