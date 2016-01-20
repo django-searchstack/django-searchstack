@@ -20,8 +20,6 @@ addons:
         - libgdal1h
         - libgeos-c1
         - libproj-dev
-        - libxapian22
-        - python-xapian
         - wajig
 
 before_install:
@@ -54,5 +52,4 @@ services:
     - elasticsearch
 
 notifications:
-    irc: "irc.freenode.org#haystack"
     email: false
