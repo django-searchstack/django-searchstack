@@ -4,6 +4,7 @@ import threading
 import warnings
 
 from django.core.exceptions import ImproperlyConfigured
+from django.utils.encoding import force_text
 from django.utils.six import string_types, with_metaclass
 
 from . import connection_router, connections
@@ -127,7 +128,7 @@ class SearchIndexBase(with_metaclass(DeclarativeMetaclass, threading.local)):
         self.prepared_data = {
             ID: get_identifier(obj),
             DJANGO_CT: get_model_ct(obj),
-            DJANGO_ID: obj.pk,
+            DJANGO_ID: force_text(obj.pk),
         }
 
         for field_name, field in self.fields.items():
@@ -527,3 +528,4 @@ class ModelSearchIndex(SearchIndex):
             final_fields[f.name].set_instance_name(self.get_index_fieldname(f))
 
         return final_fields
+
