@@ -1,8 +1,5 @@
 # encoding: utf-8
-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-from haystack.query import EmptySearchQuerySet, SearchQuerySet
+from .query import EmptySearchQuerySet, SearchQuerySet
 
 
 class SearchIndexManager(object):

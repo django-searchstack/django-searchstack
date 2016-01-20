@@ -1,21 +1,14 @@
 # encoding: utf-8
 
 # "Hey, Django! Look at me, I'm an app! For Serious!"
-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import six
+from django.utils.encoding import force_text
 from django.utils.text import capfirst
 
-from haystack.exceptions import NotHandled, SpatialError
-from haystack.utils import log as logging
-from haystack.utils.app_loading import haystack_get_model
-
-try:
-    from django.utils.encoding import force_text
-except ImportError:
-    from django.utils.encoding import force_unicode as force_text
+from .exceptions import NotHandled, SpatialError
+from .utils import log as logging
+from .utils.app_loading import haystack_get_model
 
 try:
     from geopy import distance as geopy_distance
@@ -68,7 +61,7 @@ class SearchResult(object):
         return self.__dict__.get(attr, None)
 
     def _get_searchindex(self):
-        from haystack import connections
+        from . import connections
         return connections['default'].get_unified_index().get_index(self.model)
 
     searchindex = property(_get_searchindex)
@@ -115,7 +108,7 @@ class SearchResult(object):
     model = property(_get_model, _set_model)
 
     def _get_distance(self):
-        from haystack.utils.geo import Distance
+        from .utils.geo import Distance
 
         if self._distance is None:
             # We didn't get it from the backend & we haven't tried calculating
@@ -198,7 +191,7 @@ class SearchResult(object):
         indexes are aware of as being 'stored'.
         """
         if self._stored_fields is None:
-            from haystack import connections
+            from . import connections
 
             try:
                 index = connections['default'].get_unified_index().get_index(self.model)
@@ -236,7 +229,7 @@ class SearchResult(object):
 
 
 def reload_indexes(sender, *args, **kwargs):
-    from haystack import connections
+    from . import connections
 
     for conn in connections.all():
         ui = conn.get_unified_index()

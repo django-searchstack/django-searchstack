@@ -1,7 +1,4 @@
 # encoding: utf-8
-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 import copy
 import threading
 import warnings
@@ -9,11 +6,11 @@ import warnings
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.six import with_metaclass
 
-from haystack import connection_router, connections
-from haystack.constants import DEFAULT_ALIAS, DJANGO_CT, DJANGO_ID, ID, Indexable
-from haystack.fields import *
-from haystack.manager import SearchIndexManager
-from haystack.utils import get_facet_field_name, get_identifier, get_model_ct
+from . import connection_router, connections
+from .constants import DEFAULT_ALIAS, DJANGO_CT, DJANGO_ID, ID, Indexable
+from .fields import *  # NOQA
+from .manager import SearchIndexManager
+from .utils import get_facet_field_name, get_identifier, get_model_ct
 
 try:
     from django.utils.encoding import force_text

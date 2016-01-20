@@ -1,7 +1,4 @@
 # encoding: utf-8
-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 import sys
 from optparse import make_option
 
@@ -28,7 +25,7 @@ class Command(BaseCommand):
 
     def handle(self, **options):
         """Clears out the search index completely."""
-        from haystack import connections
+        from ... import connections
         self.verbosity = int(options.get('verbosity', 1))
         self.commit = options.get('commit', True)
 

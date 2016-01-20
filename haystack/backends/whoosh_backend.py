@@ -1,7 +1,5 @@
 # encoding: utf-8
-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
+import json
 import os
 import re
 import shutil
@@ -12,28 +10,16 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.utils import six
 from django.utils.datetime_safe import datetime
+from django.utils.encoding import force_text
 
-from haystack.backends import BaseEngine, BaseSearchBackend, BaseSearchQuery, EmptyResults, log_query
-from haystack.constants import DJANGO_CT, DJANGO_ID, ID
-from haystack.exceptions import MissingDependency, SearchBackendError, SkipDocument
-from haystack.inputs import Clean, Exact, PythonData, Raw
-from haystack.models import SearchResult
-from haystack.utils import log as logging
-from haystack.utils import get_identifier, get_model_ct
-from haystack.utils.app_loading import haystack_get_model
-
-try:
-    import json
-except ImportError:
-    try:
-        import simplejson as json
-    except ImportError:
-        from django.utils import simplejson as json
-
-try:
-    from django.utils.encoding import force_text
-except ImportError:
-    from django.utils.encoding import force_unicode as force_text
+from . import BaseEngine, BaseSearchBackend, BaseSearchQuery, EmptyResults, log_query
+from ..constants import DJANGO_CT, DJANGO_ID, ID
+from ..exceptions import MissingDependency, SearchBackendError, SkipDocument
+from ..inputs import Clean, Exact, PythonData, Raw
+from ..models import SearchResult
+from ..utils import log as logging
+from ..utils import get_identifier, get_model_ct
+from ..utils.app_loading import haystack_get_model
 
 try:
     import whoosh
@@ -48,13 +34,14 @@ if not hasattr(whoosh, '__version__') or whoosh.__version__ < (2, 5, 0):
 from whoosh import index
 from whoosh.analysis import StemmingAnalyzer
 from whoosh.fields import ID as WHOOSH_ID
-from whoosh.fields import BOOLEAN, DATETIME, IDLIST, KEYWORD, NGRAM, NGRAMWORDS, NUMERIC, Schema, TEXT
+from whoosh.fields import BOOLEAN, DATETIME, IDLIST, KEYWORD, NGRAM, NGRAMWORDS, NUMERIC, TEXT, Schema
 from whoosh.filedb.filestore import FileStorage, RamStorage
 from whoosh.highlight import highlight as whoosh_highlight
 from whoosh.highlight import ContextFragmenter, HtmlFormatter
 from whoosh.qparser import QueryParser
 from whoosh.searching import ResultsPage
 from whoosh.writing import AsyncWriter
+
 
 
 DATETIME_REGEX = re.compile('^(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2})T(?P<hour>\d{2}):(?P<minute>\d{2}):(?P<second>\d{2})(\.\d{3,6}Z?)?$')
@@ -106,7 +93,7 @@ class WhooshSearchBackend(BaseSearchBackend):
         """
         Defers loading until needed.
         """
-        from haystack import connections
+        from .. import connections
         new_index = False
 
         # Make sure the index is there.
@@ -288,7 +275,7 @@ class WhooshSearchBackend(BaseSearchBackend):
     def calculate_page(self, start_offset=0, end_offset=None):
         # Prevent against Whoosh throwing an error. Requires an end_offset
         # greater than 0.
-        if not end_offset is None and end_offset <= 0:
+        if end_offset is not None and end_offset <= 0:
             end_offset = 1
 
         # Determine the page.
@@ -594,7 +581,7 @@ class WhooshSearchBackend(BaseSearchBackend):
         return results
 
     def _process_results(self, raw_page, highlight=False, query_string='', spelling_query=None, result_class=None):
-        from haystack import connections
+        from .. import connections
         results = []
 
         # It's important to grab the hits first before slicing. Otherwise, this
@@ -791,7 +778,7 @@ class WhooshSearchQuery(BaseSearchQuery):
         return ' '.join(cleaned_words)
 
     def build_query_fragment(self, field, filter_type, value):
-        from haystack import connections
+        from .. import connections
         query_frag = ''
         is_datetime = False
 
@@ -919,3 +906,4 @@ class WhooshSearchQuery(BaseSearchQuery):
 class WhooshEngine(BaseEngine):
     backend = WhooshSearchBackend
     query = WhooshSearchQuery
+

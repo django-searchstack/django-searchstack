@@ -1,12 +1,10 @@
 # encoding: utf-8
 
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D, Distance
 
-from haystack.constants import WGS_84_SRID
-from haystack.exceptions import SpatialError
+from ..constants import WGS_84_SRID
+from ..exceptions import SpatialError
 
 
 def ensure_geometry(geom):

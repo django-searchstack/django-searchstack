@@ -1,7 +1,4 @@
 # encoding: utf-8
-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 import datetime
 import re
 import warnings
@@ -10,23 +7,23 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.utils import six
 
-import haystack
-from haystack.backends import BaseEngine, BaseSearchBackend, BaseSearchQuery, log_query
-from haystack.constants import DEFAULT_OPERATOR, DJANGO_CT, DJANGO_ID, FUZZY_MAX_EXPANSIONS, FUZZY_MIN_SIM, ID
-from haystack.exceptions import MissingDependency, MoreLikeThisError, SkipDocument
-from haystack.inputs import Clean, Exact, PythonData, Raw
-from haystack.models import SearchResult
-from haystack.utils import log as logging
-from haystack.utils import get_identifier, get_model_ct
-from haystack.utils.app_loading import haystack_get_model
+from . import BaseEngine, BaseSearchBackend, BaseSearchQuery, log_query
+from .. import connections
+from ..constants import DEFAULT_OPERATOR, DJANGO_CT, DJANGO_ID, FUZZY_MAX_EXPANSIONS, FUZZY_MIN_SIM, ID
+from ..exceptions import MissingDependency, MoreLikeThisError, SkipDocument
+from ..inputs import Clean, Exact, PythonData, Raw
+from ..models import SearchResult
+from ..utils import log as logging
+from ..utils import get_identifier, get_model_ct
+from ..utils.app_loading import haystack_get_model
 
 try:
     import elasticsearch
     try:
-        # let's try this, for elasticsearch > 1.7.0
+        # let's try this, for elasticsearch > 1.7.0
         from elasticsearch.helpers import bulk
     except ImportError:
-        # let's try this, for elasticsearch <= 1.7.0
+        # let's try this, for elasticsearch <= 1.7.0
         from elasticsearch.helpers import bulk_index as bulk
     from elasticsearch.exceptions import NotFoundError
 except ImportError:
@@ -99,14 +96,13 @@ class ElasticsearchSearchBackend(BaseSearchBackend):
         }
     }
 
-
     def __init__(self, connection_alias, **connection_options):
         super(ElasticsearchSearchBackend, self).__init__(connection_alias, **connection_options)
 
-        if not 'URL' in connection_options:
+        if 'URL' not in connection_options:
             raise ImproperlyConfigured("You must specify a 'URL' in your settings for connection '%s'." % connection_alias)
 
-        if not 'INDEX_NAME' in connection_options:
+        if 'INDEX_NAME' not in connection_options:
             raise ImproperlyConfigured("You must specify a 'INDEX_NAME' in your settings for connection '%s'." % connection_alias)
 
         self.conn = elasticsearch.Elasticsearch(connection_options['URL'], timeout=self.timeout, **connection_options.get('KWARGS', {}))
@@ -130,7 +126,7 @@ class ElasticsearchSearchBackend(BaseSearchBackend):
             if not self.silently_fail:
                 raise
 
-        unified_index = haystack.connections[self.connection_alias].get_unified_index()
+        unified_index = connections[self.connection_alias].get_unified_index()
         self.content_field_name, field_mapping = self.build_schema(unified_index.all_searchfields())
         current_mapping = {
             'modelresult': {
@@ -262,7 +258,7 @@ class ElasticsearchSearchBackend(BaseSearchBackend):
                             within=None, dwithin=None, distance_point=None,
                             models=None, limit_to_registered_models=None,
                             result_class=None):
-        index = haystack.connections[self.connection_alias].get_unified_index()
+        index = connections[self.connection_alias].get_unified_index()
         content_field = index.document_field
 
         if query_string == '*:*':
@@ -433,7 +429,7 @@ class ElasticsearchSearchBackend(BaseSearchBackend):
             })
 
         if within is not None:
-            from haystack.utils.geo import generate_bounding_box
+            from ..utils.geo import generate_bounding_box
 
             ((south, west), (north, east)) = generate_bounding_box(within['point_1'], within['point_2'])
             within_filter = {
@@ -533,8 +529,6 @@ class ElasticsearchSearchBackend(BaseSearchBackend):
     def more_like_this(self, model_instance, additional_query_string=None,
                        start_offset=0, end_offset=None, models=None,
                        limit_to_registered_models=None, result_class=None, **kwargs):
-        from haystack import connections
-
         if not self.setup_complete:
             self.setup()
 
@@ -569,7 +563,6 @@ class ElasticsearchSearchBackend(BaseSearchBackend):
     def _process_results(self, raw_results, highlight=False,
                          result_class=None, distance_point=None,
                          geo_sort=False):
-        from haystack import connections
         results = []
         hits = raw_results.get('hits', {}).get('total', 0)
         facets = {}
@@ -630,7 +623,7 @@ class ElasticsearchSearchBackend(BaseSearchBackend):
                     additional_fields['_point_of_origin'] = distance_point
 
                     if geo_sort and raw_result.get('sort'):
-                        from haystack.utils.geo import Distance
+                        from ..utils.geo import Distance
                         additional_fields['_distance'] = Distance(km=float(raw_result['sort'][0]))
                     else:
                         additional_fields['_distance'] = None
@@ -757,7 +750,6 @@ class ElasticsearchSearchQuery(BaseSearchQuery):
         return '*:*'
 
     def build_query_fragment(self, field, filter_type, value):
-        from haystack import connections
         query_frag = ''
 
         if not hasattr(value, 'input_type_name'):

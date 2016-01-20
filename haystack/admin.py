@@ -1,23 +1,16 @@
 # encoding: utf-8
-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 from django import template
-from django.contrib.admin.options import csrf_protect_m, ModelAdmin
-from django.contrib.admin.views.main import ChangeList, SEARCH_VAR
+from django.contrib.admin.options import ModelAdmin, csrf_protect_m
+from django.contrib.admin.views.main import SEARCH_VAR, ChangeList
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import InvalidPage, Paginator
 from django.shortcuts import render_to_response
+from django.utils.encoding import force_text
 from django.utils.translation import ungettext
 
-from haystack import connections
-from haystack.query import SearchQuerySet
-from haystack.utils import get_model_ct_tuple
-
-try:
-    from django.utils.encoding import force_text
-except ImportError:
-    from django.utils.encoding import force_unicode as force_text
+from . import connections
+from .query import SearchQuerySet
+from .utils import get_model_ct_tuple
 
 
 def list_max_show_all(changelist):
@@ -40,7 +33,7 @@ class SearchChangeList(ChangeList):
         super(SearchChangeList, self).__init__(**kwargs)
 
     def get_results(self, request):
-        if not SEARCH_VAR in request.GET:
+        if SEARCH_VAR not in request.GET:
             return super(SearchChangeList, self).get_results(request)
 
         # Note that pagination is 0-based, not 1-based.
@@ -80,13 +73,13 @@ class SearchModelAdminMixin(object):
         if not self.has_change_permission(request, None):
             raise PermissionDenied
 
-        if not SEARCH_VAR in request.GET:
+        if SEARCH_VAR not in request.GET:
             # Do the usual song and dance.
             return super(SearchModelAdminMixin, self).changelist_view(request, extra_context)
 
         # Do a search of just this model and populate a Changelist with the
         # returned bits.
-        if not self.model in connections[self.haystack_connection].get_unified_index().get_indexed_models():
+        if self.model not in connections[self.haystack_connection].get_unified_index().get_indexed_models():
             # Oops. That model isn't being indexed. Return the usual
             # behavior instead.
             return super(SearchModelAdminMixin, self).changelist_view(request, extra_context)
@@ -115,7 +108,7 @@ class SearchModelAdminMixin(object):
             kwargs['list_max_show_all'] = self.list_max_show_all
 
         changelist = SearchChangeList(**kwargs)
-        formset = changelist.formset = None
+        changelist.formset = None
         media = self.media
 
         # Build the action form and populate it with available actions.

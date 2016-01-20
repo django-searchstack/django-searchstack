@@ -1,21 +1,18 @@
 # encoding: utf-8
-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 import warnings
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.utils import six
 
-from haystack.backends import BaseEngine, BaseSearchBackend, BaseSearchQuery, EmptyResults, log_query
-from haystack.constants import DJANGO_CT, DJANGO_ID, ID
-from haystack.exceptions import MissingDependency, MoreLikeThisError, SkipDocument
-from haystack.inputs import Clean, Exact, PythonData, Raw
-from haystack.models import SearchResult
-from haystack.utils import log as logging
-from haystack.utils import get_identifier, get_model_ct
-from haystack.utils.app_loading import haystack_get_model
+from . import BaseEngine, BaseSearchBackend, BaseSearchQuery, EmptyResults, log_query
+from ..constants import DJANGO_CT, DJANGO_ID, ID
+from ..exceptions import MissingDependency, MoreLikeThisError, SkipDocument
+from ..inputs import Clean, Exact, PythonData, Raw
+from ..models import SearchResult
+from ..utils import log as logging
+from ..utils import get_identifier, get_model_ct
+from ..utils.app_loading import haystack_get_model
 
 try:
     from pysolr import Solr, SolrError
@@ -251,7 +248,7 @@ class SolrSearchBackend(BaseSearchBackend):
                     kwargs['f.%s.stats.facet' % k] = facet
 
         if within is not None:
-            from haystack.utils.geo import generate_bounding_box
+            from ..utils.geo import generate_bounding_box
 
             kwargs.setdefault('fq', [])
             ((min_lat, min_lng), (max_lat, max_lng)) = generate_bounding_box(within['point_1'], within['point_2'])
@@ -282,7 +279,7 @@ class SolrSearchBackend(BaseSearchBackend):
     def more_like_this(self, model_instance, additional_query_string=None,
                        start_offset=0, end_offset=None, models=None,
                        limit_to_registered_models=None, result_class=None, **kwargs):
-        from haystack import connections
+        from .. import connections
 
         # Deferred models will have a different class ("RealClass_Deferred_fieldname")
         # which won't be in our registry:
@@ -407,7 +404,7 @@ class SolrSearchBackend(BaseSearchBackend):
                     additional_fields['_point_of_origin'] = distance_point
 
                     if raw_result.get('__dist__'):
-                        from haystack.utils.geo import Distance
+                        from ..utils.geo import Distance
                         additional_fields['_distance'] = Distance(km=float(raw_result['__dist__']))
                     else:
                         additional_fields['_distance'] = None
@@ -522,7 +519,7 @@ class SolrSearchQuery(BaseSearchQuery):
         return '*:*'
 
     def build_query_fragment(self, field, filter_type, value):
-        from haystack import connections
+        from .. import connections
         query_frag = ''
 
         if not hasattr(value, 'input_type_name'):
