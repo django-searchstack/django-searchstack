@@ -1,6 +1,4 @@
 # encoding: utf-8
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 import logging
 import os
 import sys
@@ -8,35 +6,14 @@ import warnings
 from datetime import timedelta
 from optparse import make_option
 
-try:
-    from django.db import close_old_connections
-except ImportError:
-    # This can be removed when we drop support for Django 1.7 and earlier:
-    from django.db import close_connection as close_old_connections
-
 from django.core.management.base import LabelCommand
-from django.db import reset_queries
+from django.db import close_old_connections, reset_queries
+from django.utils.encoding import force_text, smart_bytes
+from django.utils.timezone import now
 
-from haystack import connections as haystack_connections
-from haystack.query import SearchQuerySet
-from haystack.utils.app_loading import haystack_get_models, haystack_load_apps
-
-try:
-    from django.utils.encoding import force_text
-except ImportError:
-    from django.utils.encoding import force_unicode as force_text
-
-try:
-    from django.utils.encoding import smart_bytes
-except ImportError:
-    from django.utils.encoding import smart_str as smart_bytes
-
-try:
-    from django.utils.timezone import now
-except ImportError:
-    from datetime import datetime
-    now = datetime.now
-
+from ... import connections as haystack_connections
+from ...query import SearchQuerySet
+from ...utils.app_loading import haystack_get_models, haystack_load_apps
 
 DEFAULT_BATCH_SIZE = None
 DEFAULT_AGE = None
@@ -191,7 +168,7 @@ class Command(LabelCommand):
                 raise
 
     def update_backend(self, label, using):
-        from haystack.exceptions import NotHandled
+        from ...exceptions import NotHandled
 
         backend = haystack_connections[using].get_backend()
         unified_index = haystack_connections[using].get_unified_index()
@@ -287,3 +264,4 @@ class Command(LabelCommand):
                             print("  removing %s." % rec_id)
 
                         backend.remove(rec_id, commit=self.commit)
+

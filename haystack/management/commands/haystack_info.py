@@ -1,7 +1,4 @@
 # encoding: utf-8
-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 from django.core.management.base import NoArgsCommand
 
 
@@ -10,7 +7,7 @@ class Command(NoArgsCommand):
 
     def handle_noargs(self, **options):
         """Provides feedback about the current Haystack setup."""
-        from haystack import connections
+        from ... import connections
 
         unified_index = connections['default'].get_unified_index()
         indexed = unified_index.get_indexed_models()

@@ -1,12 +1,9 @@
 # encoding: utf-8
-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 
-from haystack.management.commands.clear_index import Command as ClearCommand
-from haystack.management.commands.update_index import Command as UpdateCommand
+from .clear_index import Command as ClearCommand
+from .update_index import Command as UpdateCommand
 
 __all__ = ['Command']
 

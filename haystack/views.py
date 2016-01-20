@@ -1,15 +1,12 @@
 # encoding: utf-8
-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 from django.conf import settings
 from django.core.paginator import InvalidPage, Paginator
 from django.http import Http404
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 
-from haystack.forms import FacetedSearchForm, ModelSearchForm
-from haystack.query import EmptySearchQuerySet
+from .forms import FacetedSearchForm, ModelSearchForm
+from .query import EmptySearchQuerySet
 
 RESULTS_PER_PAGE = getattr(settings, 'HAYSTACK_SEARCH_RESULTS_PER_PAGE', 20)
 
@@ -32,7 +29,7 @@ class SearchView(object):
         if form_class is None:
             self.form_class = ModelSearchForm
 
-        if not results_per_page is None:
+        if results_per_page is not None:
             self.results_per_page = results_per_page
 
         if template:

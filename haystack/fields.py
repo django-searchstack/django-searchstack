@@ -1,13 +1,11 @@
 # encoding: utf-8
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 import re
 
 from django.template import Context, loader
 from django.utils import datetime_safe, six
 
-from haystack.exceptions import SearchFieldError
-from haystack.utils import get_model_ct_tuple
+from .exceptions import SearchFieldError
+from .utils import get_model_ct_tuple
 
 
 class NOT_PROVIDED:
@@ -164,7 +162,7 @@ class NestedDocField(SearchFieldBase):
 
     def __init__(self, nested_search_index_cls, model_attr, faceted=False,
                  default=NOT_PROVIDED, index_fieldname=None, facet_class=None):
-        from haystack.indexes import NestedSearchIndex # avoid circular import by importing locally
+        from .indexes import NestedSearchIndex # avoid circular import by importing locally
 
         if not model_attr:
             raise SearchFieldError('model_attr is required for NestedDocField!')
@@ -217,7 +215,7 @@ class LocationField(SearchField):
     field_type = 'location'
 
     def prepare(self, obj):
-        from haystack.utils.geo import ensure_point
+        from .utils.geo import ensure_point
 
         value = super(LocationField, self).prepare(obj)
 
@@ -229,7 +227,7 @@ class LocationField(SearchField):
         return "%s,%s" % (pnt_lat, pnt_lng)
 
     def convert(self, value):
-        from haystack.utils.geo import ensure_point, Point
+        from .utils.geo import ensure_point, Point
 
         if value is None:
             return None

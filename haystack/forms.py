@@ -1,21 +1,14 @@
 # encoding: utf-8
-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 from django import forms
+from django.utils.encoding import smart_text
 from django.utils.text import capfirst
 from django.utils.translation import ugettext_lazy as _
 
-from haystack import connections
-from haystack.constants import DEFAULT_ALIAS
-from haystack.query import EmptySearchQuerySet, SearchQuerySet
-from haystack.utils import get_model_ct
-from haystack.utils.app_loading import haystack_get_model
-
-try:
-    from django.utils.encoding import smart_text
-except ImportError:
-    from django.utils.encoding import smart_unicode as smart_text
+from . import connections
+from .constants import DEFAULT_ALIAS
+from .query import EmptySearchQuerySet, SearchQuerySet
+from .utils import get_model_ct
+from .utils.app_loading import haystack_get_model
 
 
 def model_choices(using=DEFAULT_ALIAS):

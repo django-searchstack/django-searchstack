@@ -1,27 +1,18 @@
 # encoding: utf-8
 
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 import copy
+import importlib
 import inspect
 import warnings
+from collections import OrderedDict
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.module_loading import module_has_submodule
 
-from haystack.exceptions import NotHandled, SearchFieldError
-from haystack.fields import SearchField
-from haystack.utils import importlib
-from haystack.utils.app_loading import haystack_get_app_modules
-
-try:
-    # Introduced in Python 2.7
-    from collections import OrderedDict
-except ImportError:
-    # Deprecated in Django 1.8; removed in Django 1.9 (both of which require
-    # at least Python 2.7)
-    from django.utils.datastructures import SortedDict as OrderedDict
+from ..exceptions import NotHandled, SearchFieldError
+from ..fields import SearchField
+from .app_loading import haystack_get_app_modules
 
 
 def import_class(path):

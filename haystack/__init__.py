@@ -1,16 +1,12 @@
 # encoding: utf-8
-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 import logging
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 
-from haystack.constants import DEFAULT_ALIAS
-from haystack import signals
-from haystack.utils import loading
-
+from . import signals
+from .constants import DEFAULT_ALIAS
+from .utils import loading
 
 __author__ = 'Daniel Lindsley'
 __version__ = (2, 5, 'dev0')
@@ -68,3 +64,4 @@ def reset_search_queries(**kwargs):
 if settings.DEBUG:
     from django.core import signals as django_signals
     django_signals.request_started.connect(reset_search_queries)
+

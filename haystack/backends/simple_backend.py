@@ -3,19 +3,17 @@
 A very basic, ORM-based backend for simple search during tests.
 """
 
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 from warnings import warn
 
 from django.conf import settings
 from django.db.models import Q
 from django.utils import six
 
-from haystack import connections
-from haystack.backends import BaseEngine, BaseSearchBackend, BaseSearchQuery, log_query, SearchNode
-from haystack.inputs import PythonData
-from haystack.models import SearchResult
-from haystack.utils import get_model_ct_tuple
+from .. import connections
+from . import BaseEngine, BaseSearchBackend, BaseSearchQuery, log_query, SearchNode
+from ..inputs import PythonData
+from ..models import SearchResult
+from ..utils import get_model_ct_tuple
 
 if settings.DEBUG:
     import logging

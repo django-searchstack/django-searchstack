@@ -1,7 +1,4 @@
 # encoding: utf-8
-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 import os.path
 import sys
 from optparse import make_option
@@ -12,8 +9,8 @@ from django.core.management.base import BaseCommand, CommandError
 from django.template import Context, loader
 from django.utils.six.moves.urllib.parse import SplitResult, urlsplit, urlunsplit
 
-from haystack import constants
-from haystack.backends.solr_backend import SolrSearchBackend
+from ... import constants
+from ...backends.solr_backend import SolrSearchBackend
 
 
 class Command(BaseCommand):
@@ -42,7 +39,7 @@ class Command(BaseCommand):
 
     def handle(self, **options):
         """Generates a Solr schema that reflects the indexes."""
-        from haystack import connections
+        from ... import connections
         from pysolr import SolrCoreAdmin, SolrError
 
         using = options.get('using')

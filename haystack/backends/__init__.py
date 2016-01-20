@@ -1,24 +1,19 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 import copy
 from copy import deepcopy
 from time import time
+
 from django.conf import settings
 from django.db.models import Q
 from django.db.models.base import ModelBase
-from django.utils import six
-from django.utils import tree
-from haystack.constants import VALID_FILTERS, FILTER_SEPARATOR, DEFAULT_ALIAS
-from haystack.exceptions import MoreLikeThisError, FacetingError
-from haystack.models import SearchResult
-from haystack.utils.loading import UnifiedIndex
-from haystack.utils import get_model_ct
+from django.utils import six, tree
+from django.utils.encoding import force_text
 
-try:
-    from django.utils.encoding import force_text
-except ImportError:
-    from django.utils.encoding import force_unicode as force_text
-
+from ..constants import DEFAULT_ALIAS, FILTER_SEPARATOR, VALID_FILTERS
+from ..exceptions import FacetingError, MoreLikeThisError
+from ..models import SearchResult
+from ..utils import get_model_ct
+from ..utils.loading import UnifiedIndex
 
 VALID_GAPS = ['year', 'month', 'day', 'hour', 'minute', 'second']
 
@@ -37,7 +32,7 @@ def log_query(func):
             stop = time()
 
             if settings.DEBUG:
-                from haystack import connections
+                from .. import connections
                 connections[obj.connection_alias].queries.append({
                     'query_string': query_string,
                     'additional_args': args,
@@ -189,7 +184,7 @@ class BaseSearchBackend(object):
         any results that are not currently handled models and ensures
         consistent caching.
         """
-        from haystack import connections
+        from .. import connections
         models = []
 
         for model in connections[self.connection_alias].get_unified_index().get_indexed_models():
@@ -479,7 +474,7 @@ class BaseSearchQuery(object):
         self._spelling_suggestion = None
         self.result_class = SearchResult
         self.stats = {}
-        from haystack import connections
+        from .. import connections
         self._using = using
         self.backend = connections[self._using].get_backend()
 
@@ -494,7 +489,7 @@ class BaseSearchQuery(object):
 
     def __setstate__(self, obj_dict):
         """For unpickling."""
-        from haystack import connections
+        from .. import connections
         self.__dict__.update(obj_dict)
         self.backend = connections[self._using].get_backend()
 
@@ -870,7 +865,7 @@ class BaseSearchQuery(object):
 
     def add_within(self, field, point_1, point_2):
         """Adds bounding box parameters to search query."""
-        from haystack.utils.geo import ensure_point
+        from ..utils.geo import ensure_point
         self.within = {
             'field': field,
             'point_1': ensure_point(point_1),
@@ -879,7 +874,7 @@ class BaseSearchQuery(object):
 
     def add_dwithin(self, field, point, distance):
         """Adds radius-based parameters to search query."""
-        from haystack.utils.geo import ensure_point, ensure_distance
+        from ..utils.geo import ensure_point, ensure_distance
         self.dwithin = {
             'field': field,
             'point': ensure_point(point),
@@ -891,7 +886,7 @@ class BaseSearchQuery(object):
         Denotes that results should include distance measurements from the
         point passed in.
         """
-        from haystack.utils.geo import ensure_point
+        from ..utils.geo import ensure_point
         self.distance_point = {
             'field': field,
             'point': ensure_point(point),
@@ -905,15 +900,15 @@ class BaseSearchQuery(object):
 
     def add_field_facet(self, field, **options):
         """Adds a regular facet on a field."""
-        from haystack import connections
+        from .. import connections
         field_name = connections[self._using].get_unified_index().get_facet_fieldname(field)
         self.facets[field_name] = options.copy()
 
     def add_date_facet(self, field, start_date, end_date, gap_by, gap_amount=1,
                        min_count=None):
         """Adds a date-based facet on a field."""
-        from haystack import connections
-        if not gap_by in VALID_GAPS:
+        from .. import connections
+        if gap_by not in VALID_GAPS:
             raise FacetingError("The gap_by ('%s') must be one of the following: %s." % (gap_by, ', '.join(VALID_GAPS)))
         if min_count is not None and not isinstance(min_count, six.integer_types):
             raise FacetingError("min_count ('%s') must be int." % min_count)
@@ -929,7 +924,7 @@ class BaseSearchQuery(object):
 
     def add_range_facet(self, field, start, end, gap_amount=1, min_count=None):
         """Add a range-based facet on a numeric field."""
-        from haystack import connections
+        from .. import connections
 
         details = {
             'start': start,
@@ -950,7 +945,7 @@ class BaseSearchQuery(object):
 
     def add_query_facet(self, field, query):
         """Adds a query facet on a field."""
-        from haystack import connections
+        from .. import connections
         self.query_facets.append((connections[self._using].get_unified_index().get_facet_fieldname(field), query))
 
     def add_narrow_query(self, query):
@@ -975,7 +970,7 @@ class BaseSearchQuery(object):
 
     def post_process_facets(self, results):
         # Handle renaming the facet fields. Undecorate and all that.
-        from haystack import connections
+        from .. import connections
         revised_facets = {}
         field_data = connections[self._using].get_unified_index().all_searchfields()
 
@@ -1016,7 +1011,7 @@ class BaseSearchQuery(object):
         if using is None:
             using = self._using
         else:
-            from haystack import connections
+            from .. import connections
             klass = connections[using].query
 
         if klass is None:
