@@ -1,5 +1,7 @@
 === 1.0.0pre1 (Unreleased) ===
 
+- Remove long time ago deprecated API code
+- Remove python<2.7 and Django<1.7 compatibility code
 - Load routers lazily (fixes Haystack#1034)
 - Changed all internal imports from absolute to relative
 

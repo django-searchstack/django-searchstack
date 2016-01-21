@@ -166,11 +166,6 @@ class UnifiedIndex(object):
         self._fieldnames = {}
         self._facet_fieldnames = {}
 
-    @property
-    def indexes(self):
-        warnings.warn("'UnifiedIndex.indexes' was deprecated in Haystack v2.3.0. Please use UnifiedIndex.get_indexes().")
-        return self._indexes
-
     def collect_indexes(self):
         indexes = []
 
