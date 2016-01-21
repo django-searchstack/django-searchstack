@@ -1,0 +1,6 @@
+=== 1.0.0pre1 (Unreleased) ===
+
+- Changed all internal imports from absolute to relative
+
+
+Forked from django-haystack (last commit 2016-01-18)
