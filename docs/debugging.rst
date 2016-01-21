@@ -90,12 +90,12 @@ Xapian backends.
 =================================================
 
 This is a Solr-specific traceback. It generally occurs when there is an error
-with your ``HAYSTACK_CONNECTIONS[<alias>]['URL']``. Since Solr acts as a webservice, you should
+with your ``SEARCHSTACK_CONNECTIONS[<alias>]['URL']``. Since Solr acts as a webservice, you should
 test the URL in your web browser. If you receive an error, you may need to
 change your URL.
 
 This can also be caused when using old versions of pysolr (2.0.9 and before) with httplib2 and
-including a trailing slash in your ``HAYSTACK_CONNECTIONS[<alias>]['URL']``. If this applies to
+including a trailing slash in your ``SEARCHSTACK_CONNECTIONS[<alias>]['URL']``. If this applies to
 you, please upgrade to the current version of pysolr.
 
 

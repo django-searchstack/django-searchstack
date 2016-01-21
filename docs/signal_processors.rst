@@ -46,10 +46,10 @@ saved or deleted. The ``BaseSignalProcessor.setup`` &
 from being setup at initialization time.
 
 This usage is configured very simply (again, by default) with the
-``HAYSTACK_SIGNAL_PROCESSOR`` setting. An example of manually setting this
+``SEARCHSTACK_SIGNAL_PROCESSOR`` setting. An example of manually setting this
 would look like::
 
-    HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.BaseSignalProcessor'
+    SEARCHSTACK_SIGNAL_PROCESSOR = 'haystack.signals.BaseSignalProcessor'
 
 This class forms an excellent base if you'd like to override/extend for more
 advanced behavior. Which leads us to...
@@ -70,7 +70,7 @@ index proper.
 
 Configuration looks like::
 
-    HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+    SEARCHSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 
 This causes **all** ``SearchIndex`` classes to work in a realtime fashion.
 

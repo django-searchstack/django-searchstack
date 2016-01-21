@@ -80,8 +80,8 @@ the attribute of the object to populate that field with.
 
     def test_custom(self):
         # Stow.
-        old_custom_highlighter = getattr(settings, 'HAYSTACK_CUSTOM_HIGHLIGHTER', None)
-        settings.HAYSTACK_CUSTOM_HIGHLIGHTER = 'not.here.FooHighlighter'
+        old_custom_highlighter = getattr(settings, 'SEARCHSTACK_CUSTOM_HIGHLIGHTER', None)
+        settings.SEARCHSTACK_CUSTOM_HIGHLIGHTER = 'not.here.FooHighlighter'
 
         template = """{% load highlight %}{% highlight entry with query %}"""
         context = {
@@ -90,7 +90,7 @@ the attribute of the object to populate that field with.
         }
         self.assertRaises(ImproperlyConfigured, self.render, template, context)
 
-        settings.HAYSTACK_CUSTOM_HIGHLIGHTER = 'test_haystack.test_templatetags.BorkHighlighter'
+        settings.SEARCHSTACK_CUSTOM_HIGHLIGHTER = 'test_haystack.test_templatetags.BorkHighlighter'
 
         template = """{% load highlight %}{% highlight entry with query %}"""
         context = {
@@ -100,4 +100,4 @@ the attribute of the object to populate that field with.
         self.assertEqual(self.render(template, context), u'Bork!ing behavior for your model you can specify your own SearchIndex class.\nThis is useful for ensuring that future-dated or non-live content is not Bork!ed\nand searchable.\n\nEvery custom SearchIndex ')
 
         # Restore.
-        settings.HAYSTACK_CUSTOM_HIGHLIGHTER = None
+        settings.SEARCHSTACK_CUSTOM_HIGHLIGHTER = None

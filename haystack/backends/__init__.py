@@ -1013,7 +1013,7 @@ class BaseEngine(object):
             using = DEFAULT_ALIAS
 
         self.using = using
-        self.options = settings.HAYSTACK_CONNECTIONS.get(self.using, {})
+        self.options = settings.SEARCHSTACK_CONNECTIONS.get(self.using, {})
         self.queries = []
         self._index = None
         self._backend = None

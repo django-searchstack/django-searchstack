@@ -38,7 +38,7 @@ except ImportError:
 def clear_solr_index():
     # Wipe it clean.
     print('Clearing out Solr...')
-    raw_solr = pysolr.Solr(settings.HAYSTACK_CONNECTIONS['solr']['URL'])
+    raw_solr = pysolr.Solr(settings.SEARCHSTACK_CONNECTIONS['solr']['URL'])
     raw_solr.delete(q='*:*')
 
 
@@ -202,7 +202,7 @@ class SolrSearchBackendTestCase(TestCase):
         super(SolrSearchBackendTestCase, self).setUp()
 
         # Wipe it clean.
-        self.raw_solr = pysolr.Solr(settings.HAYSTACK_CONNECTIONS['solr']['URL'])
+        self.raw_solr = pysolr.Solr(settings.SEARCHSTACK_CONNECTIONS['solr']['URL'])
         clear_solr_index()
 
         # Stow.
@@ -428,15 +428,15 @@ class SolrSearchBackendTestCase(TestCase):
         self.assertEqual([result.pk for result in self.sb.search('*:*', limit_to_registered_models=False)['results']], ['1', '2', '3'])
 
         # Stow.
-        old_limit_to_registered_models = getattr(settings, 'HAYSTACK_LIMIT_TO_REGISTERED_MODELS', True)
-        settings.HAYSTACK_LIMIT_TO_REGISTERED_MODELS = False
+        old_limit_to_registered_models = getattr(settings, 'SEARCHSTACK_LIMIT_TO_REGISTERED_MODELS', True)
+        settings.SEARCHSTACK_LIMIT_TO_REGISTERED_MODELS = False
 
         self.assertEqual(self.sb.search(''), {'hits': 0, 'results': []})
         self.assertEqual(self.sb.search('*:*')['hits'], 3)
         self.assertEqual([result.pk for result in self.sb.search('*:*')['results']], ['1', '2', '3'])
 
         # Restore.
-        settings.HAYSTACK_LIMIT_TO_REGISTERED_MODELS = old_limit_to_registered_models
+        settings.SEARCHSTACK_LIMIT_TO_REGISTERED_MODELS = old_limit_to_registered_models
 
     def test_spatial_search_parameters(self):
         p1 = Point(1.23, 4.56)
@@ -1364,7 +1364,7 @@ class SolrBoostBackendTestCase(TestCase):
         super(SolrBoostBackendTestCase, self).setUp()
 
         # Wipe it clean.
-        self.raw_solr = pysolr.Solr(settings.HAYSTACK_CONNECTIONS['solr']['URL'])
+        self.raw_solr = pysolr.Solr(settings.SEARCHSTACK_CONNECTIONS['solr']['URL'])
         clear_solr_index()
 
         # Stow.

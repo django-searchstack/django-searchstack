@@ -366,7 +366,7 @@ class WhooshSearchBackend(BaseSearchBackend):
         self.index = self.index.refresh()
 
         if limit_to_registered_models is None:
-            limit_to_registered_models = getattr(settings, 'HAYSTACK_LIMIT_TO_REGISTERED_MODELS', True)
+            limit_to_registered_models = getattr(settings, 'SEARCHSTACK_LIMIT_TO_REGISTERED_MODELS', True)
 
         if models and len(models):
             model_choices = sorted(get_model_ct(model) for model in models)
@@ -492,7 +492,7 @@ class WhooshSearchBackend(BaseSearchBackend):
         self.index = self.index.refresh()
 
         if limit_to_registered_models is None:
-            limit_to_registered_models = getattr(settings, 'HAYSTACK_LIMIT_TO_REGISTERED_MODELS', True)
+            limit_to_registered_models = getattr(settings, 'SEARCHSTACK_LIMIT_TO_REGISTERED_MODELS', True)
 
         if models and len(models):
             model_choices = sorted(get_model_ct(model) for model in models)
@@ -531,7 +531,7 @@ class WhooshSearchBackend(BaseSearchBackend):
                 if narrowed_results:
                     narrowed_results.filter(recent_narrowed_results)
                 else:
-                   narrowed_results = recent_narrowed_results
+                    narrowed_results = recent_narrowed_results
 
         page_num, page_length = self.calculate_page(start_offset, end_offset)
 

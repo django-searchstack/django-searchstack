@@ -44,7 +44,7 @@ class ManagementCommandTestCase(TestCase):
 
     def setUp(self):
         super(ManagementCommandTestCase, self).setUp()
-        self.solr = pysolr.Solr(settings.HAYSTACK_CONNECTIONS['solr']['URL'])
+        self.solr = pysolr.Solr(settings.SEARCHSTACK_CONNECTIONS['solr']['URL'])
 
         # Stow.
         self.old_ui = connections['solr'].get_unified_index()
@@ -170,7 +170,7 @@ class ManagementCommandTestCase(TestCase):
 
     def test_build_schema_wrong_backend(self):
 
-        settings.HAYSTACK_CONNECTIONS['whoosh'] = {'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
+        settings.SEARCHSTACK_CONNECTIONS['whoosh'] = {'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
                                                    'PATH': mkdtemp(prefix='dummy-path-'), }
 
         connections['whoosh']._index = self.ui
@@ -182,7 +182,7 @@ class AppModelManagementCommandTestCase(TestCase):
 
     def setUp(self):
         super(AppModelManagementCommandTestCase, self).setUp()
-        self.solr = pysolr.Solr(settings.HAYSTACK_CONNECTIONS['solr']['URL'])
+        self.solr = pysolr.Solr(settings.SEARCHSTACK_CONNECTIONS['solr']['URL'])
 
         # Stow.
         self.old_ui = connections['solr'].get_unified_index()

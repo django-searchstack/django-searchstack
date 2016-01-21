@@ -4,16 +4,16 @@ from django.conf import settings
 DEFAULT_ALIAS = 'default'
 
 # Reserved field names
-ID = getattr(settings, 'HAYSTACK_ID_FIELD', 'id')
-DJANGO_CT = getattr(settings, 'HAYSTACK_DJANGO_CT_FIELD', 'django_ct')
-DJANGO_ID = getattr(settings, 'HAYSTACK_DJANGO_ID_FIELD', 'django_id')
+ID = getattr(settings, 'SEARCHSTACK_ID_FIELD', 'id')
+DJANGO_CT = getattr(settings, 'SEARCHSTACK_DJANGO_CT_FIELD', 'django_ct')
+DJANGO_ID = getattr(settings, 'SEARCHSTACK_DJANGO_ID_FIELD', 'django_id')
 
 # Default operator. Valid options are AND/OR.
-DEFAULT_OPERATOR = getattr(settings, 'HAYSTACK_DEFAULT_OPERATOR', 'AND')
+DEFAULT_OPERATOR = getattr(settings, 'SEARCHSTACK_DEFAULT_OPERATOR', 'AND')
 
 # Default values on elasticsearch
-FUZZY_MIN_SIM = getattr(settings, 'HAYSTACK_FUZZY_MIN_SIM', 0.5)
-FUZZY_MAX_EXPANSIONS = getattr(settings, 'HAYSTACK_FUZZY_MAX_EXPANSIONS', 50)
+FUZZY_MIN_SIM = getattr(settings, 'SEARCHSTACK_FUZZY_MIN_SIM', 0.5)
+FUZZY_MAX_EXPANSIONS = getattr(settings, 'SEARCHSTACK_FUZZY_MAX_EXPANSIONS', 50)
 
 # Valid expression extensions.
 VALID_FILTERS = set(['contains', 'exact', 'gt', 'gte', 'lt', 'lte', 'in', 'startswith', 'range', 'fuzzy'])
@@ -23,7 +23,7 @@ FILTER_SEPARATOR = '__'
 REPR_OUTPUT_SIZE = 20
 
 # Number of SearchResults to load at a time.
-ITERATOR_LOAD_PER_QUERY = getattr(settings, 'HAYSTACK_ITERATOR_LOAD_PER_QUERY', 10)
+ITERATOR_LOAD_PER_QUERY = getattr(settings, 'SEARCHSTACK_ITERATOR_LOAD_PER_QUERY', 10)
 
 # A marker class in the hierarchy to indicate that it handles search data.
 class Indexable(object):

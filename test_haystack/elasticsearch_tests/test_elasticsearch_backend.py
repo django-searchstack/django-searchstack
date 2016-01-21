@@ -37,9 +37,9 @@ except ImportError:
 
 def clear_elasticsearch_index():
     # Wipe it clean.
-    raw_es = elasticsearch.Elasticsearch(settings.HAYSTACK_CONNECTIONS['elasticsearch']['URL'])
+    raw_es = elasticsearch.Elasticsearch(settings.SEARCHSTACK_CONNECTIONS['elasticsearch']['URL'])
     try:
-        raw_es.indices.delete(index=settings.HAYSTACK_CONNECTIONS['elasticsearch']['INDEX_NAME'])
+        raw_es.indices.delete(index=settings.SEARCHSTACK_CONNECTIONS['elasticsearch']['INDEX_NAME'])
         raw_es.indices.refresh()
     except elasticsearch.TransportError:
         pass
@@ -220,7 +220,7 @@ class TestSettings(TestCase):
     def test_kwargs_are_passed_on(self):
         from haystack.backends.elasticsearch_backend import ElasticsearchSearchBackend
         backend = ElasticsearchSearchBackend('alias', **{
-            'URL': settings.HAYSTACK_CONNECTIONS['elasticsearch']['URL'],
+            'URL': settings.SEARCHSTACK_CONNECTIONS['elasticsearch']['URL'],
             'INDEX_NAME': 'testing',
             'KWARGS': {'max_retries': 42}
         })
@@ -233,7 +233,7 @@ class ElasticsearchSearchBackendTestCase(TestCase):
         super(ElasticsearchSearchBackendTestCase, self).setUp()
 
         # Wipe it clean.
-        self.raw_es = elasticsearch.Elasticsearch(settings.HAYSTACK_CONNECTIONS['elasticsearch']['URL'])
+        self.raw_es = elasticsearch.Elasticsearch(settings.SEARCHSTACK_CONNECTIONS['elasticsearch']['URL'])
         clear_elasticsearch_index()
 
         # Stow.
@@ -266,7 +266,7 @@ class ElasticsearchSearchBackendTestCase(TestCase):
 
     def raw_search(self, query):
         try:
-            return self.raw_es.search(q='*:*', index=settings.HAYSTACK_CONNECTIONS['elasticsearch']['INDEX_NAME'])
+            return self.raw_es.search(q='*:*', index=settings.SEARCHSTACK_CONNECTIONS['elasticsearch']['INDEX_NAME'])
         except elasticsearch.TransportError:
             return {}
 
@@ -298,8 +298,8 @@ class ElasticsearchSearchBackendTestCase(TestCase):
             pass
 
     def test_update_no_documents(self):
-        url = settings.HAYSTACK_CONNECTIONS['elasticsearch']['URL']
-        index_name = settings.HAYSTACK_CONNECTIONS['elasticsearch']['INDEX_NAME']
+        url = settings.SEARCHSTACK_CONNECTIONS['elasticsearch']['URL']
+        index_name = settings.SEARCHSTACK_CONNECTIONS['elasticsearch']['INDEX_NAME']
 
         sb = connections['elasticsearch'].backend('elasticsearch', URL=url, INDEX_NAME=index_name, SILENTLY_FAIL=True)
         self.assertEqual(sb.update(self.smmi, []), None)
@@ -456,15 +456,15 @@ class ElasticsearchSearchBackendTestCase(TestCase):
         self.assertEqual(sorted([result.pk for result in self.sb.search('*:*', limit_to_registered_models=False)['results']]), ['1', '2', '3'])
 
         # Stow.
-        old_limit_to_registered_models = getattr(settings, 'HAYSTACK_LIMIT_TO_REGISTERED_MODELS', True)
-        settings.HAYSTACK_LIMIT_TO_REGISTERED_MODELS = False
+        old_limit_to_registered_models = getattr(settings, 'SEARCHSTACK_LIMIT_TO_REGISTERED_MODELS', True)
+        settings.SEARCHSTACK_LIMIT_TO_REGISTERED_MODELS = False
 
         self.assertEqual(self.sb.search(''), {'hits': 0, 'results': []})
         self.assertEqual(self.sb.search('*:*')['hits'], 3)
         self.assertEqual(sorted([result.pk for result in self.sb.search('*:*')['results']]), ['1', '2', '3'])
 
         # Restore.
-        settings.HAYSTACK_LIMIT_TO_REGISTERED_MODELS = old_limit_to_registered_models
+        settings.SEARCHSTACK_LIMIT_TO_REGISTERED_MODELS = old_limit_to_registered_models
 
     def test_spatial_search_parameters(self):
         p1 = Point(1.23, 4.56)
@@ -565,8 +565,8 @@ class FailedElasticsearchSearchBackendTestCase(TestCase):
         # Stow.
         # Point the backend at a URL that doesn't exist so we can watch the
         # sparks fly.
-        self.old_es_url = settings.HAYSTACK_CONNECTIONS['elasticsearch']['URL']
-        settings.HAYSTACK_CONNECTIONS['elasticsearch']['URL'] = "%s/foo/" % self.old_es_url
+        self.old_es_url = settings.SEARCHSTACK_CONNECTIONS['elasticsearch']['URL']
+        settings.SEARCHSTACK_CONNECTIONS['elasticsearch']['URL'] = "%s/foo/" % self.old_es_url
         self.cap = CaptureHandler()
         logging.getLogger('haystack').addHandler(self.cap)
         import haystack
@@ -583,7 +583,7 @@ class FailedElasticsearchSearchBackendTestCase(TestCase):
     def tearDown(self):
         import haystack
         # Restore.
-        settings.HAYSTACK_CONNECTIONS['elasticsearch']['URL'] = self.old_es_url
+        settings.SEARCHSTACK_CONNECTIONS['elasticsearch']['URL'] = self.old_es_url
         connections['elasticsearch']._index = self.old_ui
         logging.getLogger('haystack').removeHandler(self.cap)
         logging.getLogger('haystack').addHandler(haystack.stream)
@@ -1294,7 +1294,7 @@ class ElasticsearchBoostBackendTestCase(TestCase):
         super(ElasticsearchBoostBackendTestCase, self).setUp()
 
         # Wipe it clean.
-        self.raw_es = elasticsearch.Elasticsearch(settings.HAYSTACK_CONNECTIONS['elasticsearch']['URL'])
+        self.raw_es = elasticsearch.Elasticsearch(settings.SEARCHSTACK_CONNECTIONS['elasticsearch']['URL'])
         clear_elasticsearch_index()
 
         # Stow.
@@ -1326,7 +1326,7 @@ class ElasticsearchBoostBackendTestCase(TestCase):
         super(ElasticsearchBoostBackendTestCase, self).tearDown()
 
     def raw_search(self, query):
-        return self.raw_es.search(q='*:*', index=settings.HAYSTACK_CONNECTIONS['elasticsearch']['INDEX_NAME'])
+        return self.raw_es.search(q='*:*', index=settings.SEARCHSTACK_CONNECTIONS['elasticsearch']['INDEX_NAME'])
 
     def test_boost(self):
         self.sb.update(self.smmi, self.sample_objs)
@@ -1356,7 +1356,7 @@ class ElasticsearchBoostBackendTestCase(TestCase):
 class RecreateIndexTestCase(TestCase):
     def setUp(self):
         self.raw_es = elasticsearch.Elasticsearch(
-            settings.HAYSTACK_CONNECTIONS['elasticsearch']['URL'])
+            settings.SEARCHSTACK_CONNECTIONS['elasticsearch']['URL'])
 
     def test_recreate_index(self):
         clear_elasticsearch_index()

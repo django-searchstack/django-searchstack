@@ -19,7 +19,6 @@ Table Of Contents
    other_apps
    debugging
 
-   migration_from_1_to_2
    python3
    contributing
 

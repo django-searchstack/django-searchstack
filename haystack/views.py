@@ -8,7 +8,7 @@ from django.template import RequestContext
 from .forms import FacetedSearchForm, ModelSearchForm
 from .query import EmptySearchQuerySet
 
-RESULTS_PER_PAGE = getattr(settings, 'HAYSTACK_SEARCH_RESULTS_PER_PAGE', 20)
+RESULTS_PER_PAGE = getattr(settings, 'SEARCHSTACK_SEARCH_RESULTS_PER_PAGE', 20)
 
 
 class SearchView(object):

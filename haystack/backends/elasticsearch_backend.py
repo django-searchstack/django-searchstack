@@ -402,7 +402,7 @@ class ElasticsearchSearchBackend(BaseSearchBackend):
                 }
 
         if limit_to_registered_models is None:
-            limit_to_registered_models = getattr(settings, 'HAYSTACK_LIMIT_TO_REGISTERED_MODELS', True)
+            limit_to_registered_models = getattr(settings, 'SEARCHSTACK_LIMIT_TO_REGISTERED_MODELS', True)
 
         if models and len(models):
             model_choices = sorted(get_model_ct(model) for model in models)

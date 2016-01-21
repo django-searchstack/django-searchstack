@@ -9,7 +9,7 @@ several settings you can alter within your ``settings.py``. This is a
 comprehensive list of the settings Haystack recognizes.
 
 
-``HAYSTACK_DEFAULT_OPERATOR``
+``SEARCHSTACK_DEFAULT_OPERATOR``
 =============================
 
 **Optional**
@@ -19,13 +19,13 @@ filters together is.
 
 Valid options are::
 
-    HAYSTACK_DEFAULT_OPERATOR = 'AND'
-    HAYSTACK_DEFAULT_OPERATOR = 'OR'
+    SEARCHSTACK_DEFAULT_OPERATOR = 'AND'
+    SEARCHSTACK_DEFAULT_OPERATOR = 'OR'
 
 Defaults to ``AND``.
 
 
-``HAYSTACK_CONNECTIONS``
+``SEARCHSTACK_CONNECTIONS``
 ========================
 
 **Required**
@@ -33,7 +33,7 @@ Defaults to ``AND``.
 This setting controls which backends should be available. It should be a
 dictionary of dictionaries resembling the following (complete) example::
 
-    HAYSTACK_CONNECTIONS = {
+    SEARCHSTACK_CONNECTIONS = {
         'default': {
             'ENGINE': 'haystack.backends.solr_backend.SolrEngine',
             'URL': 'http://localhost:9001/solr/default',
@@ -107,7 +107,7 @@ The following options are optional:
   should be passed on to the underlying client library.
 
 
-``HAYSTACK_ROUTERS``
+``SEARCHSTACK_ROUTERS``
 ====================
 
 **Optional**
@@ -117,12 +117,12 @@ handle updates/deletes/reads.
 
 An example::
 
-    HAYSTACK_ROUTERS = ['search_routers.MasterSlaveRouter', 'haystack.routers.DefaultRouter']
+    SEARCHSTACK_ROUTERS = ['search_routers.MasterSlaveRouter', 'haystack.routers.DefaultRouter']
 
 Defaults to ``['haystack.routers.DefaultRouter']``.
 
 
-``HAYSTACK_SIGNAL_PROCESSOR``
+``SEARCHSTACK_SIGNAL_PROCESSOR``
 =============================
 
 **Optional**
@@ -132,12 +132,12 @@ signals & keep the search index up-to-date.
 
 An example::
 
-    HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+    SEARCHSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 
 Defaults to ``'haystack.signals.BaseSignalProcessor'``.
 
 
-``HAYSTACK_DOCUMENT_FIELD``
+``SEARCHSTACK_DOCUMENT_FIELD``
 ===========================
 
 **Optional**
@@ -147,12 +147,12 @@ for searching within.
 
 An example::
 
-    HAYSTACK_DOCUMENT_FIELD = 'wall_o_text'
+    SEARCHSTACK_DOCUMENT_FIELD = 'wall_o_text'
 
 Defaults to ``text``.
 
 
-``HAYSTACK_SEARCH_RESULTS_PER_PAGE``
+``SEARCHSTACK_SEARCH_RESULTS_PER_PAGE``
 ====================================
 
 **Optional**
@@ -162,12 +162,12 @@ included ``SearchView`` and its subclasses.
 
 An example::
 
-    HAYSTACK_SEARCH_RESULTS_PER_PAGE = 50
+    SEARCHSTACK_SEARCH_RESULTS_PER_PAGE = 50
 
 Defaults to ``20``.
 
 
-``HAYSTACK_CUSTOM_HIGHLIGHTER``
+``SEARCHSTACK_CUSTOM_HIGHLIGHTER``
 ===============================
 
 **Optional**
@@ -178,13 +178,13 @@ the full path to the class.
 
 An example::
 
-    HAYSTACK_CUSTOM_HIGHLIGHTER = 'myapp.utils.BorkHighlighter'
+    SEARCHSTACK_CUSTOM_HIGHLIGHTER = 'myapp.utils.BorkHighlighter'
 
 No default is provided. Haystack automatically falls back to the default
 implementation.
 
 
-``HAYSTACK_ITERATOR_LOAD_PER_QUERY``
+``SEARCHSTACK_ITERATOR_LOAD_PER_QUERY``
 ====================================
 
 **Optional**
@@ -200,12 +200,12 @@ at a time, you can bump this up for better performance.
 
 An example::
 
-    HAYSTACK_ITERATOR_LOAD_PER_QUERY = 100
+    SEARCHSTACK_ITERATOR_LOAD_PER_QUERY = 100
 
 The default is 10 results at a time.
 
 
-``HAYSTACK_LIMIT_TO_REGISTERED_MODELS``
+``SEARCHSTACK_LIMIT_TO_REGISTERED_MODELS``
 =======================================
 
 **Optional**
@@ -219,12 +219,12 @@ performance boost.
 
 An example::
 
-    HAYSTACK_LIMIT_TO_REGISTERED_MODELS = False
+    SEARCHSTACK_LIMIT_TO_REGISTERED_MODELS = False
 
 Default is ``True``.
 
 
-``HAYSTACK_ID_FIELD``
+``SEARCHSTACK_ID_FIELD``
 =====================
 
 **Optional**
@@ -235,12 +235,12 @@ Haystack's defaults.
 
 An example::
 
-    HAYSTACK_ID_FIELD = 'my_id'
+    SEARCHSTACK_ID_FIELD = 'my_id'
 
 Default is ``id``.
 
 
-``HAYSTACK_DJANGO_CT_FIELD``
+``SEARCHSTACK_DJANGO_CT_FIELD``
 ============================
 
 **Optional**
@@ -251,12 +251,12 @@ collide with Haystack's defaults.
 
 An example::
 
-    HAYSTACK_DJANGO_CT_FIELD = 'my_django_ct'
+    SEARCHSTACK_DJANGO_CT_FIELD = 'my_django_ct'
 
 Default is ``django_ct``.
 
 
-``HAYSTACK_DJANGO_ID_FIELD``
+``SEARCHSTACK_DJANGO_ID_FIELD``
 ============================
 
 **Optional**
@@ -267,12 +267,12 @@ collide with Haystack's defaults.
 
 An example::
 
-    HAYSTACK_DJANGO_ID_FIELD = 'my_django_id'
+    SEARCHSTACK_DJANGO_ID_FIELD = 'my_django_id'
 
 Default is ``django_id``.
 
 
-``HAYSTACK_IDENTIFIER_METHOD``
+``SEARCHSTACK_IDENTIFIER_METHOD``
 ==============================
 
 **Optional**
@@ -284,12 +284,12 @@ needs.
 
 An example::
 
-    HAYSTACK_IDENTIFIER_METHOD = 'my_app.module.get_identifier'
+    SEARCHSTACK_IDENTIFIER_METHOD = 'my_app.module.get_identifier'
 
 Default is ``haystack.utils.default_get_identifier``.
 
 
-``HAYSTACK_FUZZY_MIN_SIM``
+``SEARCHSTACK_FUZZY_MIN_SIM``
 ==========================
 
 **Optional**
@@ -300,7 +300,7 @@ filter.
 Default is ``0.5``
 
 
-``HAYSTACK_FUZZY_MAX_EXPANSIONS``
+``SEARCHSTACK_FUZZY_MAX_EXPANSIONS``
 ==========================
 
 **Optional**

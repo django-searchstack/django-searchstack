@@ -39,7 +39,7 @@ class SolrSearchBackend(BaseSearchBackend):
     def __init__(self, connection_alias, **connection_options):
         super(SolrSearchBackend, self).__init__(connection_alias, **connection_options)
 
-        if not 'URL' in connection_options:
+        if 'URL' not in connection_options:
             raise ImproperlyConfigured("You must specify a 'URL' in your settings for connection '%s'." % connection_alias)
 
         self.conn = Solr(connection_options['URL'], timeout=self.timeout, **connection_options.get('KWARGS', {}))
@@ -218,7 +218,7 @@ class SolrSearchBackend(BaseSearchBackend):
             kwargs['facet.query'] = ["%s:%s" % (field, value) for field, value in query_facets]
 
         if limit_to_registered_models is None:
-            limit_to_registered_models = getattr(settings, 'HAYSTACK_LIMIT_TO_REGISTERED_MODELS', True)
+            limit_to_registered_models = getattr(settings, 'SEARCHSTACK_LIMIT_TO_REGISTERED_MODELS', True)
 
         if models and len(models):
             model_choices = sorted(get_model_ct(model) for model in models)
@@ -300,7 +300,7 @@ class SolrSearchBackend(BaseSearchBackend):
         narrow_queries = set()
 
         if limit_to_registered_models is None:
-            limit_to_registered_models = getattr(settings, 'HAYSTACK_LIMIT_TO_REGISTERED_MODELS', True)
+            limit_to_registered_models = getattr(settings, 'SEARCHSTACK_LIMIT_TO_REGISTERED_MODELS', True)
 
         if models and len(models):
             model_choices = sorted(get_model_ct(model) for model in models)

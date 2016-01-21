@@ -20,35 +20,35 @@ log.addHandler(stream)
 
 
 # Help people clean up from 1.X.
-if hasattr(settings, 'HAYSTACK_SITECONF'):
-    raise ImproperlyConfigured('The HAYSTACK_SITECONF setting is no longer used & can be removed.')
-if hasattr(settings, 'HAYSTACK_SEARCH_ENGINE'):
-    raise ImproperlyConfigured('The HAYSTACK_SEARCH_ENGINE setting has been replaced with HAYSTACK_CONNECTIONS.')
-if hasattr(settings, 'HAYSTACK_ENABLE_REGISTRATIONS'):
-    raise ImproperlyConfigured('The HAYSTACK_ENABLE_REGISTRATIONS setting is no longer used & can be removed.')
-if hasattr(settings, 'HAYSTACK_INCLUDE_SPELLING'):
-    raise ImproperlyConfigured('The HAYSTACK_INCLUDE_SPELLING setting is now a per-backend setting & belongs in HAYSTACK_CONNECTIONS.')
+if hasattr(settings, 'SEARCHSTACK_SITECONF'):
+    raise ImproperlyConfigured('The SEARCHSTACK_SITECONF setting is no longer used & can be removed.')
+if hasattr(settings, 'SEARCHSTACK_SEARCH_ENGINE'):
+    raise ImproperlyConfigured('The SEARCHSTACK_SEARCH_ENGINE setting has been replaced with SEARCHSTACK_CONNECTIONS.')
+if hasattr(settings, 'SEARCHSTACK_ENABLE_REGISTRATIONS'):
+    raise ImproperlyConfigured('The SEARCHSTACK_ENABLE_REGISTRATIONS setting is no longer used & can be removed.')
+if hasattr(settings, 'SEARCHSTACK_INCLUDE_SPELLING'):
+    raise ImproperlyConfigured('The SEARCHSTACK_INCLUDE_SPELLING setting is now a per-backend setting & belongs in SEARCHSTACK_CONNECTIONS.')
 
 
 # Check the 2.X+ bits.
-if not hasattr(settings, 'HAYSTACK_CONNECTIONS'):
-    raise ImproperlyConfigured('The HAYSTACK_CONNECTIONS setting is required.')
-if DEFAULT_ALIAS not in settings.HAYSTACK_CONNECTIONS:
-    raise ImproperlyConfigured("The default alias '%s' must be included in the HAYSTACK_CONNECTIONS setting." % DEFAULT_ALIAS)
+if not hasattr(settings, 'SEARCHSTACK_CONNECTIONS'):
+    raise ImproperlyConfigured('The SEARCHSTACK_CONNECTIONS setting is required.')
+if DEFAULT_ALIAS not in settings.SEARCHSTACK_CONNECTIONS:
+    raise ImproperlyConfigured("The default alias '%s' must be included in the SEARCHSTACK_CONNECTIONS setting." % DEFAULT_ALIAS)
 
 # Load the connections.
-connections = loading.ConnectionHandler(settings.HAYSTACK_CONNECTIONS)
+connections = loading.ConnectionHandler(settings.SEARCHSTACK_CONNECTIONS)
 
-# Just check HAYSTACK_ROUTERS setting validity, routers will be loaded lazily
-if hasattr(settings, 'HAYSTACK_ROUTERS'):
-    if not isinstance(settings.HAYSTACK_ROUTERS, (list, tuple)):
-        raise ImproperlyConfigured("The HAYSTACK_ROUTERS setting must be either a list or tuple.")
+# Just check SEARCHSTACK_ROUTERS setting validity, routers will be loaded lazily
+if hasattr(settings, 'SEARCHSTACK_ROUTERS'):
+    if not isinstance(settings.SEARCHSTACK_ROUTERS, (list, tuple)):
+        raise ImproperlyConfigured("The SEARCHSTACK_ROUTERS setting must be either a list or tuple.")
 
 # Load the router(s).
 connection_router = loading.ConnectionRouter()
 
 # Setup the signal processor.
-signal_processor_path = getattr(settings, 'HAYSTACK_SIGNAL_PROCESSOR', 'haystack.signals.BaseSignalProcessor')
+signal_processor_path = getattr(settings, 'SEARCHSTACK_SIGNAL_PROCESSOR', 'haystack.signals.BaseSignalProcessor')
 signal_processor_class = loading.import_class(signal_processor_path)
 signal_processor = signal_processor_class(connections, connection_router)
 

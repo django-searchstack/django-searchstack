@@ -18,7 +18,7 @@ Specifying Available Connections
 You can supply as many backends as you like, each with a descriptive name. A
 complete setup that accesses all backends might look like::
 
-    HAYSTACK_CONNECTIONS = {
+    SEARCHSTACK_CONNECTIONS = {
         'default': {
             'ENGINE': 'haystack.backends.solr_backend.SolrEngine',
             'URL': 'http://localhost:9001/solr/default',
@@ -50,7 +50,7 @@ complete setup that accesses all backends might look like::
     }
 
 You are required to have at least one connection listed within
-``HAYSTACK_CONNECTIONS``, it must be named ``default`` & it must have a valid
+``SEARCHSTACK_CONNECTIONS``, it must be named ``default`` & it must have a valid
 ``ENGINE`` within it.
 
 
@@ -95,9 +95,9 @@ calling it) while ``for_read`` may receive ``models`` (being a list of ``Model``
 classes the ``SearchQuerySet`` may be looking at).
 
 You may provide as many routers as you like by overriding the
-``HAYSTACK_ROUTERS`` setting. For example::
+``SEARCHSTACK_ROUTERS`` setting. For example::
 
-    HAYSTACK_ROUTERS = ['myapp.routers.MasterRouter', 'myapp.routers.SlaveRouter', 'haystack.routers.DefaultRouter']
+    SEARCHSTACK_ROUTERS = ['myapp.routers.MasterRouter', 'myapp.routers.SlaveRouter', 'haystack.routers.DefaultRouter']
 
 
 Master-Slave Example

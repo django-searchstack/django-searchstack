@@ -26,16 +26,16 @@ class GetFacetFieldNameTestCase(TestCase):
         mock = MockModel.objects.get(pk=1)
         self.assertEqual(get_identifier(mock), 'core.mockmodel.1')
 
-    @override_settings(HAYSTACK_IDENTIFIER_METHOD='test_haystack.core.custom_identifier.get_identifier_method')
+    @override_settings(SEARCHSTACK_IDENTIFIER_METHOD='test_haystack.core.custom_identifier.get_identifier_method')
     def test_haystack_identifier_method(self):
         get_identifier = _lookup_identifier_method()
         self.assertEqual(get_identifier('a.b.c'), 'a.b.c')
 
-    @override_settings(HAYSTACK_IDENTIFIER_METHOD='test_haystack.core.custom_identifier.not_there')
+    @override_settings(SEARCHSTACK_IDENTIFIER_METHOD='test_haystack.core.custom_identifier.not_there')
     def test_haystack_identifier_method_bad_path(self):
         self.assertRaises(AttributeError, _lookup_identifier_method)
 
-    @override_settings(HAYSTACK_IDENTIFIER_METHOD='core.not_there.not_there')
+    @override_settings(SEARCHSTACK_IDENTIFIER_METHOD='core.not_there.not_there')
     def test_haystack_identifier_method_bad_module(self):
         self.assertRaises(ImportError, _lookup_identifier_method)
 
@@ -162,12 +162,12 @@ class HighlighterTestCase(TestCase):
 
 class LoggingFacadeTestCase(TestCase):
     def test_everything_noops_if_settings_are_off(self):
-        with self.settings(HAYSTACK_LOGGING=False):
+        with self.settings(SEARCHSTACK_LOGGING=False):
             l = log.LoggingFacade(None)
             l.error()
 
     def test_uses_provided_logger_if_logging_is_on(self):
-        with self.settings(HAYSTACK_LOGGING=True):
+        with self.settings(SEARCHSTACK_LOGGING=True):
             l = log.LoggingFacade(None)
             try:
                 l.error()

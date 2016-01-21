@@ -41,15 +41,15 @@ class HighlightNode(template.Node):
             kwargs['max_length'] = self.max_length.resolve(context)
 
         # Handle a user-defined highlighting function.
-        if hasattr(settings, 'HAYSTACK_CUSTOM_HIGHLIGHTER') and settings.HAYSTACK_CUSTOM_HIGHLIGHTER:
+        if hasattr(settings, 'SEARCHSTACK_CUSTOM_HIGHLIGHTER') and settings.SEARCHSTACK_CUSTOM_HIGHLIGHTER:
             # Do the import dance.
             try:
-                path_bits = settings.HAYSTACK_CUSTOM_HIGHLIGHTER.split('.')
+                path_bits = settings.SEARCHSTACK_CUSTOM_HIGHLIGHTER.split('.')
                 highlighter_path, highlighter_classname = '.'.join(path_bits[:-1]), path_bits[-1]
                 highlighter_module = importlib.import_module(highlighter_path)
                 highlighter_class = getattr(highlighter_module, highlighter_classname)
             except (ImportError, AttributeError) as e:
-                raise ImproperlyConfigured("The highlighter '%s' could not be imported: %s" % (settings.HAYSTACK_CUSTOM_HIGHLIGHTER, e))
+                raise ImproperlyConfigured("The highlighter '%s' could not be imported: %s" % (settings.SEARCHSTACK_CUSTOM_HIGHLIGHTER, e))
         else:
             from ..utils import Highlighter
             highlighter_class = Highlighter
@@ -113,4 +113,3 @@ def highlight(parser, token):
             kwargs['max_length'] = six.next(arg_bits)
 
     return HighlightNode(text_block, query, **kwargs)
-

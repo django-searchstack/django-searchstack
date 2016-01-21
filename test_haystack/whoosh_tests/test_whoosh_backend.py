@@ -274,15 +274,15 @@ class WhooshSearchBackendTestCase(WhooshTestCase):
         self.assertEqual([result.pk for result in self.sb.search(u'*', limit_to_registered_models=False)['results']], [u'%s' % i for i in range(1, 24)])
 
         # Stow.
-        old_limit_to_registered_models = getattr(settings, 'HAYSTACK_LIMIT_TO_REGISTERED_MODELS', True)
-        settings.HAYSTACK_LIMIT_TO_REGISTERED_MODELS = False
+        old_limit_to_registered_models = getattr(settings, 'SEARCHSTACK_LIMIT_TO_REGISTERED_MODELS', True)
+        settings.SEARCHSTACK_LIMIT_TO_REGISTERED_MODELS = False
 
         self.assertEqual(self.sb.search(u''), {'hits': 0, 'results': []})
         self.assertEqual(self.sb.search(u'*')['hits'], 23)
         self.assertEqual([result.pk for result in self.sb.search(u'*')['results']], [u'%s' % i for i in range(1, 24)])
 
         # Restore.
-        settings.HAYSTACK_LIMIT_TO_REGISTERED_MODELS = old_limit_to_registered_models
+        settings.SEARCHSTACK_LIMIT_TO_REGISTERED_MODELS = old_limit_to_registered_models
 
     def test_highlight(self):
         self.sb.update(self.wmmi, self.sample_objs)
@@ -421,13 +421,13 @@ class WhooshSearchBackendTestCase(WhooshTestCase):
         self.assertEqual([result.month for result in sb.search(u'*')['results']], [u'06', u'07', u'06', u'07', u'07', u'07', u'07', u'07', u'07', u'07', u'07', u'07', u'07', u'07', u'07', u'07', u'07', u'07', u'07', u'07', u'07', u'07', u'07'])
         connections['whoosh']._index = old_ui
 
-    @unittest.skipIf(settings.HAYSTACK_CONNECTIONS['whoosh'].get('STORAGE') != 'file',
+    @unittest.skipIf(settings.SEARCHSTACK_CONNECTIONS['whoosh'].get('STORAGE') != 'file',
                      'testing writability requires Whoosh to use STORAGE=file')
     def test_writable(self):
-        if not os.path.exists(settings.HAYSTACK_CONNECTIONS['whoosh']['PATH']):
-            os.makedirs(settings.HAYSTACK_CONNECTIONS['whoosh']['PATH'])
+        if not os.path.exists(settings.SEARCHSTACK_CONNECTIONS['whoosh']['PATH']):
+            os.makedirs(settings.SEARCHSTACK_CONNECTIONS['whoosh']['PATH'])
 
-        os.chmod(settings.HAYSTACK_CONNECTIONS['whoosh']['PATH'], 0o400)
+        os.chmod(settings.SEARCHSTACK_CONNECTIONS['whoosh']['PATH'], 0o400)
 
         try:
             self.sb.setup()
@@ -436,7 +436,7 @@ class WhooshSearchBackendTestCase(WhooshTestCase):
             # Yay. We failed
             pass
 
-        os.chmod(settings.HAYSTACK_CONNECTIONS['whoosh']['PATH'], 0o755)
+        os.chmod(settings.SEARCHSTACK_CONNECTIONS['whoosh']['PATH'], 0o755)
 
     def test_slicing(self):
         self.sb.update(self.wmmi, self.sample_objs)
@@ -1056,8 +1056,8 @@ class LiveWhooshRamStorageTestCase(TestCase):
         super(LiveWhooshRamStorageTestCase, self).setUp()
 
         # Stow.
-        self.old_whoosh_storage = settings.HAYSTACK_CONNECTIONS['whoosh'].get('STORAGE', 'file')
-        settings.HAYSTACK_CONNECTIONS['whoosh']['STORAGE'] = 'ram'
+        self.old_whoosh_storage = settings.SEARCHSTACK_CONNECTIONS['whoosh'].get('STORAGE', 'file')
+        settings.SEARCHSTACK_CONNECTIONS['whoosh']['STORAGE'] = 'ram'
 
         self.old_ui = connections['whoosh'].get_unified_index()
         self.ui = UnifiedIndex()
@@ -1086,7 +1086,7 @@ class LiveWhooshRamStorageTestCase(TestCase):
     def tearDown(self):
         self.sqs.query.backend.clear()
 
-        settings.HAYSTACK_CONNECTIONS['whoosh']['STORAGE'] = self.old_whoosh_storage
+        settings.SEARCHSTACK_CONNECTIONS['whoosh']['STORAGE'] = self.old_whoosh_storage
         connections['whoosh']._index = self.old_ui
         super(LiveWhooshRamStorageTestCase, self).tearDown()
 

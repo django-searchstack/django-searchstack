@@ -31,28 +31,28 @@ def default_get_identifier(obj_or_string):
 
 def _lookup_identifier_method():
     """
-    If the user has set HAYSTACK_IDENTIFIER_METHOD, import it and return the method uncalled.
-    If HAYSTACK_IDENTIFIER_METHOD is not defined, return haystack.utils.default_get_identifier.
+    If the user has set SEARCHSTACK_IDENTIFIER_METHOD, import it and return the method uncalled.
+    If SEARCHSTACK_IDENTIFIER_METHOD is not defined, return haystack.utils.default_get_identifier.
 
     This always runs at module import time.  We keep the code in a function
     so that it can be called from unit tests, in order to simulate the re-loading
     of this module.
     """
-    if not hasattr(settings, 'HAYSTACK_IDENTIFIER_METHOD'):
+    if not hasattr(settings, 'SEARCHSTACK_IDENTIFIER_METHOD'):
         return default_get_identifier
 
-    module_path, method_name = settings.HAYSTACK_IDENTIFIER_METHOD.rsplit(".", 1)
+    module_path, method_name = settings.SEARCHSTACK_IDENTIFIER_METHOD.rsplit(".", 1)
 
     try:
         module = importlib.import_module(module_path)
     except ImportError:
-        raise ImportError(u"Unable to import module '%s' provided for HAYSTACK_IDENTIFIER_METHOD." % module_path)
+        raise ImportError(u"Unable to import module '%s' provided for SEARCHSTACK_IDENTIFIER_METHOD." % module_path)
 
     identifier_method = getattr(module, method_name, None)
 
     if not identifier_method:
         raise AttributeError(
-            u"Provided method '%s' for HAYSTACK_IDENTIFIER_METHOD does not exist in '%s'." % (method_name, module_path)
+            u"Provided method '%s' for SEARCHSTACK_IDENTIFIER_METHOD does not exist in '%s'." % (method_name, module_path)
         )
 
     return identifier_method

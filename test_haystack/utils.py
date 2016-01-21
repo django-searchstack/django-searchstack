@@ -10,8 +10,8 @@ def check_solr(using='solr'):
     except ImportError:
         raise unittest.SkipTest("pysolr not installed.")
 
-    solr = Solr(settings.HAYSTACK_CONNECTIONS[using]['URL'])
+    solr = Solr(settings.SEARCHSTACK_CONNECTIONS[using]['URL'])
     try:
         solr.search('*:*')
     except SolrError as e:
-        raise unittest.SkipTest("solr not running on %r" % settings.HAYSTACK_CONNECTIONS[using]['URL'], e)
+        raise unittest.SkipTest("solr not running on %r" % settings.SEARCHSTACK_CONNECTIONS[using]['URL'], e)

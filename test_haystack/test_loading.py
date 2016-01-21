@@ -91,39 +91,39 @@ class ConnectionHandlerTestCase(TestCase):
 class ConnectionRouterTestCase(TestCase):
     @override_settings()
     def test_init(self):
-        del settings.HAYSTACK_ROUTERS
+        del settings.SEARCHSTACK_ROUTERS
         cr = loading.ConnectionRouter()
         self.assertEqual([str(route.__class__) for route in cr.routers], ["<class 'haystack.routers.DefaultRouter'>"])
 
-    @override_settings(HAYSTACK_ROUTERS=['haystack.routers.DefaultRouter'])
+    @override_settings(SEARCHSTACK_ROUTERS=['haystack.routers.DefaultRouter'])
     def test_router_override1(self):
         cr = loading.ConnectionRouter()
         self.assertEqual([str(route.__class__) for route in cr.routers], ["<class 'haystack.routers.DefaultRouter'>"])
 
-    @override_settings(HAYSTACK_ROUTERS=[])
+    @override_settings(SEARCHSTACK_ROUTERS=[])
     def test_router_override2(self):
         cr = loading.ConnectionRouter()
         self.assertEqual([str(route.__class__) for route in cr.routers], ["<class 'haystack.routers.DefaultRouter'>"])
 
-    @override_settings(HAYSTACK_ROUTERS=['test_haystack.mocks.MockMasterSlaveRouter', 'haystack.routers.DefaultRouter'])
+    @override_settings(SEARCHSTACK_ROUTERS=['test_haystack.mocks.MockMasterSlaveRouter', 'haystack.routers.DefaultRouter'])
     def test_router_override3(self):
         cr = loading.ConnectionRouter()
         self.assertEqual([str(route.__class__) for route in cr.routers], ["<class 'test_haystack.mocks.MockMasterSlaveRouter'>", "<class 'haystack.routers.DefaultRouter'>"])
 
     @override_settings()
     def test_actions1(self):
-        del settings.HAYSTACK_ROUTERS
+        del settings.SEARCHSTACK_ROUTERS
         cr = loading.ConnectionRouter()
         self.assertEqual(cr.for_read(), ['default'])
         self.assertEqual(cr.for_write(), ['default'])
 
-    @override_settings(HAYSTACK_ROUTERS=['test_haystack.mocks.MockMasterSlaveRouter', 'haystack.routers.DefaultRouter'])
+    @override_settings(SEARCHSTACK_ROUTERS=['test_haystack.mocks.MockMasterSlaveRouter', 'haystack.routers.DefaultRouter'])
     def test_actions2(self):
         cr = loading.ConnectionRouter()
         self.assertEqual(cr.for_read(), ['slave', 'default'])
         self.assertEqual(cr.for_write(), ['master', 'default'])
 
-    @override_settings(HAYSTACK_ROUTERS=['test_haystack.mocks.MockPassthroughRouter', 'test_haystack.mocks.MockMasterSlaveRouter', 'haystack.routers.DefaultRouter'])
+    @override_settings(SEARCHSTACK_ROUTERS=['test_haystack.mocks.MockPassthroughRouter', 'test_haystack.mocks.MockMasterSlaveRouter', 'haystack.routers.DefaultRouter'])
     def test_actions3(self):
         cr = loading.ConnectionRouter()
         # Demonstrate pass-through

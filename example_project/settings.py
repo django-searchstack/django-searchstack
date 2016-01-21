@@ -17,7 +17,7 @@ INSTALLED_APPS = settings.INSTALLED_APPS + (
 )
 
 
-HAYSTACK_CONNECTIONS = {
+SEARCHSTACK_CONNECTIONS = {
     'default': {
         # For Solr:
         'ENGINE': 'haystack.backends.solr_backend.SolrEngine',

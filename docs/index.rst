@@ -42,7 +42,6 @@ you up and running:
    installing_search_engines
    debugging
 
-   migration_from_1_to_2
    python3
    contributing
 

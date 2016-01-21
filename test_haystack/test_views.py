@@ -135,7 +135,7 @@ class SearchViewTestCase(TestCase):
     def test_spelling(self):
         # Stow.
         from django.conf import settings
-        old = settings.HAYSTACK_CONNECTIONS['default'].get('INCLUDE_SPELLING', None)
+        old = settings.SEARCHSTACK_CONNECTIONS['default'].get('INCLUDE_SPELLING', None)
 
         sv = SearchView()
         sv.query = 'Nothing'
@@ -144,10 +144,10 @@ class SearchViewTestCase(TestCase):
         output = sv.create_response()
 
         # Restore
-        settings.HAYSTACK_CONNECTIONS['default']['INCLUDE_SPELLING'] = old
+        settings.SEARCHSTACK_CONNECTIONS['default']['INCLUDE_SPELLING'] = old
 
         if old is None:
-            del settings.HAYSTACK_CONNECTIONS['default']['INCLUDE_SPELLING']
+            del settings.SEARCHSTACK_CONNECTIONS['default']['INCLUDE_SPELLING']
 
 
 class ResultsPerPageTestCase(TestCase):

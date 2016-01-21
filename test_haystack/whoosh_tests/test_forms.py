@@ -14,13 +14,13 @@ from .test_whoosh_backend import LiveWhooshRoundTripTestCase
 
 class SpellingSuggestionTestCase(LiveWhooshRoundTripTestCase):
     def setUp(self):
-        self.old_spelling_setting = settings.HAYSTACK_CONNECTIONS['whoosh'].get('INCLUDE_SPELLING', False)
-        settings.HAYSTACK_CONNECTIONS['whoosh']['INCLUDE_SPELLING'] = True
+        self.old_spelling_setting = settings.SEARCHSTACK_CONNECTIONS['whoosh'].get('INCLUDE_SPELLING', False)
+        settings.SEARCHSTACK_CONNECTIONS['whoosh']['INCLUDE_SPELLING'] = True
 
         super(SpellingSuggestionTestCase, self).setUp()
 
     def tearDown(self):
-        settings.HAYSTACK_CONNECTIONS['whoosh']['INCLUDE_SPELLING'] = self.old_spelling_setting
+        settings.SEARCHSTACK_CONNECTIONS['whoosh']['INCLUDE_SPELLING'] = self.old_spelling_setting
         super(SpellingSuggestionTestCase, self).tearDown()
 
     def test_form_suggestion(self):

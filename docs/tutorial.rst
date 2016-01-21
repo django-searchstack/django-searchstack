@@ -106,7 +106,7 @@ Within your ``settings.py``, you'll need to add a setting to indicate where your
 site configuration file will live and which backend to use, as well as other
 settings for that backend.
 
-``HAYSTACK_CONNECTIONS`` is a required setting and should be at least one of
+``SEARCHSTACK_CONNECTIONS`` is a required setting and should be at least one of
 the following:
 
 Solr
@@ -114,7 +114,7 @@ Solr
 
 Example::
 
-    HAYSTACK_CONNECTIONS = {
+    SEARCHSTACK_CONNECTIONS = {
         'default': {
             'ENGINE': 'haystack.backends.solr_backend.SolrEngine',
             'URL': 'http://127.0.0.1:8983/solr'
@@ -129,7 +129,7 @@ Elasticsearch
 
 Example::
 
-    HAYSTACK_CONNECTIONS = {
+    SEARCHSTACK_CONNECTIONS = {
         'default': {
             'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
             'URL': 'http://127.0.0.1:9200/',
@@ -148,7 +148,7 @@ it out of a place your webserver may serve documents out of apply.
 Example::
 
     import os
-    HAYSTACK_CONNECTIONS = {
+    SEARCHSTACK_CONNECTIONS = {
         'default': {
             'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
             'PATH': os.path.join(os.path.dirname(__file__), 'whoosh_index'),
@@ -170,7 +170,7 @@ it out of a place your webserver may serve documents out of apply.
 Example::
 
     import os
-    HAYSTACK_CONNECTIONS = {
+    SEARCHSTACK_CONNECTIONS = {
         'default': {
             'ENGINE': 'xapian_backend.XapianEngine',
             'PATH': os.path.join(os.path.dirname(__file__), 'xapian_index'),
@@ -193,7 +193,7 @@ not recommended for production use but it will return results.
 
 Example::
 
-    HAYSTACK_CONNECTIONS = {
+    SEARCHSTACK_CONNECTIONS = {
         'default': {
             'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
         },

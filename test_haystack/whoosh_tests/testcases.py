@@ -13,7 +13,7 @@ class WhooshTestCase(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        for name, conn_settings in settings.HAYSTACK_CONNECTIONS.items():
+        for name, conn_settings in settings.SEARCHSTACK_CONNECTIONS.items():
             if conn_settings['ENGINE'] != 'haystack.backends.whoosh_backend.WhooshEngine':
                 continue
 
@@ -31,7 +31,7 @@ class WhooshTestCase(TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        for conn in settings.HAYSTACK_CONNECTIONS.values():
+        for conn in settings.SEARCHSTACK_CONNECTIONS.values():
             if conn['ENGINE'] != 'haystack.backends.whoosh_backend.WhooshEngine':
                 continue
 

@@ -123,8 +123,8 @@ class ConnectionRouter(object):
     def routers(self):
         if self._routers is None:
             default_routers = ['haystack.routers.DefaultRouter']
-            router_list = getattr(settings, 'HAYSTACK_ROUTERS', default_routers)
-            # in case HAYSTACK_ROUTERS is empty, fallback to default routers
+            router_list = getattr(settings, 'SEARCHSTACK_ROUTERS', default_routers)
+            # in case SEARCHSTACK_ROUTERS is empty, fallback to default routers
             if not len(router_list):
                 router_list = default_routers
 
@@ -162,7 +162,7 @@ class UnifiedIndex(object):
         self._built = False
         self.excluded_indexes = excluded_indexes or []
         self.excluded_indexes_ids = {}
-        self.document_field = getattr(settings, 'HAYSTACK_DOCUMENT_FIELD', 'text')
+        self.document_field = getattr(settings, 'SEARCHSTACK_DOCUMENT_FIELD', 'text')
         self._fieldnames = {}
         self._facet_fieldnames = {}
 
@@ -211,7 +211,7 @@ class UnifiedIndex(object):
                 raise ImproperlyConfigured(
                     "Model '%s' has more than one 'SearchIndex`` handling it. "
                     "Please exclude either '%s' or '%s' using the 'EXCLUDED_INDEXES' "
-                    "setting defined in 'settings.HAYSTACK_CONNECTIONS'." % (
+                    "setting defined in 'settings.SEARCHSTACK_CONNECTIONS'." % (
                         model, self._indexes[model], index
                     )
                 )

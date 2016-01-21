@@ -8,7 +8,7 @@ from django.views.generic.list import MultipleObjectMixin
 from .forms import FacetedSearchForm, ModelSearchForm
 from .query import SearchQuerySet
 
-RESULTS_PER_PAGE = getattr(settings, 'HAYSTACK_SEARCH_RESULTS_PER_PAGE', 20)
+RESULTS_PER_PAGE = getattr(settings, 'SEARCHSTACK_SEARCH_RESULTS_PER_PAGE', 20)
 
 
 class SearchMixin(MultipleObjectMixin, FormMixin):

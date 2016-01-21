@@ -67,7 +67,7 @@ can highlight however you choose. For example::
             
             return highlighted_chunk
 
-Then set the ``HAYSTACK_CUSTOM_HIGHLIGHTER`` setting to
+Then set the ``SEARCHSTACK_CUSTOM_HIGHLIGHTER`` setting to
 ``myapp.utils.BorkHighlighter``. Usage would then look like::
 
     >>> highlight = BorkHighlighter(my_query)

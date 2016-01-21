@@ -126,7 +126,7 @@ Filters the search by looking for (and including) certain attributes.
 
 The lookup parameters (``**kwargs``) should follow the `Field lookups`_ below.
 If you specify more than one pair, they will be joined in the query according to
-the ``HAYSTACK_DEFAULT_OPERATOR`` setting (defaults to ``AND``).
+the ``SEARCHSTACK_DEFAULT_OPERATOR`` setting (defaults to ``AND``).
 
 You can pass it either strings or a variety of :ref:`ref-inputtypes` if you
 need more advanced query behavior.
@@ -496,7 +496,7 @@ method is still supported, however it now uses the much more flexible
 
 It handles exact matches (specified with single or double quotes), negation (
 using a ``-`` immediately before the term) and joining remaining terms with the
-operator specified in ``HAYSTACK_DEFAULT_OPERATOR``.
+operator specified in ``SEARCHSTACK_DEFAULT_OPERATOR``.
 
 Example::
 

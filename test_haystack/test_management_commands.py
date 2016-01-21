@@ -15,7 +15,7 @@ class CoreManagementCommandsTestCase(TestCase):
     def test_update_index_default_using(self, m):
         """update_index uses default index when --using is not present"""
         call_command('update_index')
-        for k in settings.HAYSTACK_CONNECTIONS:
+        for k in settings.SEARCHSTACK_CONNECTIONS:
             self.assertTrue(call('core', k) in m.call_args_list)
 
     @patch("haystack.management.commands.update_index.Command.update_backend")
@@ -31,8 +31,8 @@ class CoreManagementCommandsTestCase(TestCase):
     def test_clear_index_default_using(self, m):
         """clear_index uses all keys when --using is not present"""
         call_command('clear_index', verbosity=0, interactive=False)
-        self.assertEqual(len(settings.HAYSTACK_CONNECTIONS), m.call_count)
-        for k in settings.HAYSTACK_CONNECTIONS:
+        self.assertEqual(len(settings.SEARCHSTACK_CONNECTIONS), m.call_count)
+        for k in settings.SEARCHSTACK_CONNECTIONS:
             self.assertTrue(call(k) in m.call_args_list)
 
     @patch("haystack.loading.ConnectionHandler.__getitem__")
@@ -51,8 +51,8 @@ class CoreManagementCommandsTestCase(TestCase):
         """rebuild_index uses default index when --using is not present"""
 
         call_command('rebuild_index', verbosity=0, interactive=False)
-        self.assertEqual(len(settings.HAYSTACK_CONNECTIONS), m2.call_count)
-        for k in settings.HAYSTACK_CONNECTIONS:
+        self.assertEqual(len(settings.SEARCHSTACK_CONNECTIONS), m2.call_count)
+        for k in settings.SEARCHSTACK_CONNECTIONS:
             self.assertTrue(call(k) in m2.call_args_list)
         m1.assert_any_call("core", "default")
         m1.assert_any_call("core", "whoosh")
