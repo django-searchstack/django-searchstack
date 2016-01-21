@@ -215,7 +215,7 @@ class SearchIndex(with_metaclass(DeclarativeMetaclass, threading.local)):
             # Remove any fields that lack a value and are ``null=True``.
             if field.null is True:
                 if self.prepared_data[field.index_fieldname] is None:
-                    del(self.prepared_data[field.index_fieldname])
+                    del self.prepared_data[field.index_fieldname]
 
         return self.prepared_data
 

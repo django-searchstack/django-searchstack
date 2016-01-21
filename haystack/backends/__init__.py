@@ -481,7 +481,7 @@ class BaseSearchQuery(object):
     def __getstate__(self):
         """For pickling."""
         obj_dict = self.__dict__.copy()
-        del(obj_dict['backend'])
+        del obj_dict['backend']
         return obj_dict
 
     def __setstate__(self, obj_dict):

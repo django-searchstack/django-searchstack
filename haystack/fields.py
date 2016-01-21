@@ -399,7 +399,7 @@ class FacetField(SearchField):
 
         if 'facet_for' in kwargs:
             self.facet_for = kwargs['facet_for']
-            del(kwargs['facet_for'])
+            del kwargs['facet_for']
 
         return kwargs
 

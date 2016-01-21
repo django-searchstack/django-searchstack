@@ -1,7 +1,4 @@
 # encoding: utf-8
-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 from django.db.models.loading import get_model
 
 from haystack.backends import BaseEngine, BaseSearchBackend, BaseSearchQuery, log_query
@@ -40,6 +37,7 @@ class MockSearchResult(SearchResult):
 MOCK_SEARCH_RESULTS = [MockSearchResult('core', 'MockModel', i, 1 - (i / 100.0)) for i in range(1, 100)]
 MOCK_INDEX_DATA = {}
 
+
 class MockSearchBackend(BaseSearchBackend):
     model_name = 'mockmodel'
 
@@ -51,8 +49,8 @@ class MockSearchBackend(BaseSearchBackend):
 
     def remove(self, obj, commit=True):
         global MOCK_INDEX_DATA
-        if commit == True:
-            del(MOCK_INDEX_DATA[get_identifier(obj)])
+        if commit is True:
+            del MOCK_INDEX_DATA[get_identifier(obj)]
 
     def clear(self, models=None, commit=True):
         global MOCK_INDEX_DATA
@@ -102,10 +100,12 @@ class CharPKMockSearchBackend(MockSearchBackend):
     mock_search_results = [MockSearchResult('core', 'CharPKMockModel', 'sometext', 0.5),
                            MockSearchResult('core', 'CharPKMockModel', '1234', 0.3)]
 
+
 class ReadQuerySetMockSearchBackend(MockSearchBackend):
     model_name = 'afifthmockmodel'
     mock_search_results = [MockSearchResult('core', 'afifthmockmodel', 1, 2),
                            MockSearchResult('core', 'afifthmockmodel', 2, 2)]
+
 
 class MixedMockSearchBackend(MockSearchBackend):
     @log_query

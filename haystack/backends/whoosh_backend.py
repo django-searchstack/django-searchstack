@@ -619,8 +619,8 @@ class WhooshSearchBackend(BaseSearchBackend):
                     else:
                         additional_fields[string_key] = self._to_python(value)
 
-                del(additional_fields[DJANGO_CT])
-                del(additional_fields[DJANGO_ID])
+                del additional_fields[DJANGO_CT]
+                del additional_fields[DJANGO_ID]
 
                 if highlight:
                     sa = StemmingAnalyzer()

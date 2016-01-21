@@ -393,9 +393,9 @@ class SolrSearchBackend(BaseSearchBackend):
                     else:
                         additional_fields[string_key] = self.conn._to_python(value)
 
-                del(additional_fields[DJANGO_CT])
-                del(additional_fields[DJANGO_ID])
-                del(additional_fields['score'])
+                del additional_fields[DJANGO_CT]
+                del additional_fields[DJANGO_ID]
+                del additional_fields['score']
 
                 if raw_result[ID] in getattr(raw_results, 'highlighting', {}):
                     additional_fields['highlighted'] = raw_results.highlighting[raw_result[ID]]

@@ -217,7 +217,7 @@ class SearchResult(object):
         # The ``log`` is excluded because, under the hood, ``logging`` uses
         # ``threading.Lock``, which doesn't pickle well.
         ret_dict = self.__dict__.copy()
-        del(ret_dict['log'])
+        del ret_dict['log']
         return ret_dict
 
     def __setstate__(self, data_dict):

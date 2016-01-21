@@ -613,8 +613,8 @@ class ElasticsearchSearchBackend(BaseSearchBackend):
                     else:
                         additional_fields[string_key] = self._to_python(value)
 
-                del(additional_fields[DJANGO_CT])
-                del(additional_fields[DJANGO_ID])
+                del additional_fields[DJANGO_CT]
+                del additional_fields[DJANGO_ID]
 
                 if 'highlight' in raw_result:
                     additional_fields['highlighted'] = raw_result['highlight'].get(content_field, '')
