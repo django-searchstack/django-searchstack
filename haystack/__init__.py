@@ -64,4 +64,3 @@ def reset_search_queries(**kwargs):
 if settings.DEBUG:
     from django.core import signals as django_signals
     django_signals.request_started.connect(reset_search_queries)
-

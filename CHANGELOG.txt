@@ -1,5 +1,6 @@
 === 1.0.0pre1 (Unreleased) ===
 
+- Load routers lazily (fixes Haystack#1034)
 - Changed all internal imports from absolute to relative
 
 
