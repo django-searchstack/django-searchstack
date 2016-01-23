@@ -648,13 +648,6 @@ class ValuesSearchQuerySet(ValuesListSearchQuerySet):
     the key/value pairs for the result, exactly like Django's
     ``ValuesQuerySet``.
     """
-    def _fill_cache(self, start, end):
-        query_fields = set(self._internal_fields)
-        query_fields.update(self._fields)
-        kwargs = {
-            'fields': query_fields
-        }
-        return super(ValuesListSearchQuerySet, self)._fill_cache(start, end, **kwargs)
 
     def post_process_results(self, results):
         to_cache = []
