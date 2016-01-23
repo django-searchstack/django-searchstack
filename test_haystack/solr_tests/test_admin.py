@@ -1,7 +1,5 @@
 # encoding: utf-8
-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
+from django import VERSION as DJANGO_VERSION
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.test import TestCase
@@ -11,7 +9,7 @@ from haystack import connections, reset_search_queries
 from haystack.utils.loading import UnifiedIndex
 
 from ..core.models import MockModel
-from .test_solr_backend import clear_solr_index, SolrMockModelSearchIndex
+from .test_solr_backend import SolrMockModelSearchIndex, clear_solr_index
 
 
 @override_settings(DEBUG=True)
@@ -70,7 +68,11 @@ class SearchModelAdminTestCase(TestCase):
         self.assertIn(5, result_pks)
 
         # Make sure only changelist is affected.
-        resp = self.client.get('/admin/core/mockmodel/1/')
+        change_url = '/admin/core/mockmodel/1/'
+        if DJANGO_VERSION >= (1, 9, 0):
+            # in Django 1.9 change view urls changed
+            change_url += 'change/'
+        resp = self.client.get(change_url)
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(len(connections['solr'].queries), 3)
         self.assertEqual(resp.context['original'].id, 1)

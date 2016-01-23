@@ -12,6 +12,8 @@ from ..utils import unittest
 
 @patch("haystack.templatetags.more_like_this.SearchQuerySet")
 class MoreLikeThisTagTestCase(TestCase):
+    fixtures = ['initial_data.json']
+
     def render(self, template, context):
         # Why on Earth does Django not have a TemplateTestCase yet?
         t = Template(template)

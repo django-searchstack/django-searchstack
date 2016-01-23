@@ -31,7 +31,9 @@ class Command(BaseCommand):
 
     def build_template(self, using):
         t = loader.get_template('search_configuration/solr.xml')
+        return t.render(self.build_context(using))
 
+    def build_context(self, using):
         backend = connections[using].get_backend()
 
         if not isinstance(backend, SolrSearchBackend):
@@ -39,7 +41,7 @@ class Command(BaseCommand):
 
         content_field_name, fields = backend.build_schema(
             connections[using].get_unified_index().all_searchfields())
-        context = {
+        return {
             'content_field_name': content_field_name,
             'fields': fields,
             'default_operator': constants.DEFAULT_OPERATOR,
@@ -47,7 +49,6 @@ class Command(BaseCommand):
             'DJANGO_CT': constants.DJANGO_CT,
             'DJANGO_ID': constants.DJANGO_ID,
         }
-        return t.render(context)
 
     def print_stdout(self, schema_xml):
         self.stderr.write('')

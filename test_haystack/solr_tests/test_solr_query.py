@@ -15,6 +15,8 @@ from ..core.models import AnotherMockModel, MockModel
 
 
 class SolrSearchQueryTestCase(TestCase):
+    fixtures = ['initial_data.json']
+
     def setUp(self):
         super(SolrSearchQueryTestCase, self).setUp()
         self.sq = connections['solr'].get_query()
