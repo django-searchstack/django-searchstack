@@ -27,6 +27,8 @@ class CaptureHandler(std_logging.Handler):
 
 
 class SearchResultTestCase(TestCase):
+    fixtures = ['initial_data.json']
+
     def setUp(self):
         super(SearchResultTestCase, self).setUp()
         cap = CaptureHandler()

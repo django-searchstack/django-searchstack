@@ -14,6 +14,8 @@ from .testcases import WhooshTestCase
 
 
 class WhooshSearchQueryTestCase(WhooshTestCase):
+    fixtures = ['initial_data.json']
+
     def setUp(self):
         super(WhooshSearchQueryTestCase, self).setUp()
 
