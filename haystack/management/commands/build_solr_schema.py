@@ -1,68 +1,65 @@
 # encoding: utf-8
-import sys
-from optparse import make_option
+import argparse
 
 from django.core.exceptions import ImproperlyConfigured
 from django.core.management.base import BaseCommand
-from django.template import Context, loader
+from django.template import loader
 
-from ... import constants
+from ... import connections, constants
 from ...backends.solr_backend import SolrSearchBackend
 
 
 class Command(BaseCommand):
     help = "Generates a Solr schema that reflects the indexes."
-    base_options = (
-        make_option("-f", "--filename", action="store", type="string", dest="filename",
-                    help='If provided, directs output to a file instead of stdout.'),
-        make_option("-u", "--using", action="store", type="string", dest="using", default=constants.DEFAULT_ALIAS,
-                    help='If provided, chooses a connection to work with.'),
-    )
-    option_list = BaseCommand.option_list + base_options
 
-    def handle(self, **options):
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "-f", "--filename", action="store", type=argparse.FileType('w'), dest="schema_file",
+            help='If provided, directs output to a file instead of stdout.')
+        parser.add_argument(
+            "-u", "--using", action="store", dest="using", default=constants.DEFAULT_ALIAS,
+            help='If provided, chooses a connection to work with.')
+
+    def handle(self, **kwargs):
         """Generates a Solr schema that reflects the indexes."""
+        schema_xml = self.build_template(kwargs['using'])
 
-        using = options.get('using')
-        schema_xml = self.build_template(using=using)
-
-        if options.get('filename'):
-            self.write_file(options.get('filename'), schema_xml)
+        if kwargs['schema_file']:
+            self.write_file(kwargs['schema_file'], schema_xml)
         else:
             self.print_stdout(schema_xml)
 
-    def build_context(self, using):
-        from haystack import connections, connection_router
+    def build_template(self, using):
+        t = loader.get_template('search_configuration/solr.xml')
+
         backend = connections[using].get_backend()
 
         if not isinstance(backend, SolrSearchBackend):
             raise ImproperlyConfigured("'%s' isn't configured as a SolrEngine)." % backend.connection_alias)
 
-        content_field_name, fields = backend.build_schema(connections[using].get_unified_index().all_searchfields())
-        return Context({
+        content_field_name, fields = backend.build_schema(
+            connections[using].get_unified_index().all_searchfields())
+        context = {
             'content_field_name': content_field_name,
             'fields': fields,
             'default_operator': constants.DEFAULT_OPERATOR,
             'ID': constants.ID,
             'DJANGO_CT': constants.DJANGO_CT,
             'DJANGO_ID': constants.DJANGO_ID,
-        })
-
-    def build_template(self, using):
-        t = loader.get_template('search_configuration/solr.xml')
-        c = self.build_context(using=using)
-        return t.render(c)
+        }
+        return t.render(context)
 
     def print_stdout(self, schema_xml):
-        sys.stderr.write("\n")
-        sys.stderr.write("\n")
-        sys.stderr.write("\n")
-        sys.stderr.write("Save the following output to 'schema.xml' and place it in your Solr configuration directory.\n")
-        sys.stderr.write("--------------------------------------------------------------------------------------------\n")
-        sys.stderr.write("\n")
-        print(schema_xml)
+        self.stderr.write('')
+        self.stderr.write('')
+        self.stderr.write('')
+        self.stderr.write(
+            "Save the following output to 'schema.xml' and place it in your Solr configuration directory.")
+        self.stderr.write(
+            "--------------------------------------------------------------------------------------------")
+        self.stderr.write('')
+        self.stdout.write(schema_xml)
 
-    def write_file(self, filename, schema_xml):
-        schema_file = open(filename, 'w')
+    def write_file(self, schema_file, schema_xml):
         schema_file.write(schema_xml)
         schema_file.close()

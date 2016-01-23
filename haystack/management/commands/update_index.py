@@ -1,12 +1,10 @@
 # encoding: utf-8
 import logging
 import os
-import sys
-import warnings
 from datetime import timedelta
-from optparse import make_option
 
-from django.core.management.base import LabelCommand
+from dateutil.parser import parse as dateutil_parse
+from django.core.management.base import BaseCommand
 from django.db import close_old_connections, reset_queries
 from django.utils.encoding import force_text, smart_bytes
 from django.utils.timezone import now
@@ -14,11 +12,6 @@ from django.utils.timezone import now
 from ... import connections as haystack_connections
 from ...query import SearchQuerySet
 from ...utils.app_loading import haystack_get_models, haystack_load_apps
-
-DEFAULT_BATCH_SIZE = None
-DEFAULT_AGE = None
-APP = 'app'
-MODEL = 'model'
 
 
 def worker(bits):
@@ -76,96 +69,96 @@ def do_update(backend, index, qs, start, end, total, verbosity=1, commit=True):
     reset_queries()
 
 
-class Command(LabelCommand):
-    help = "Freshens the index for the given app(s)."
-    base_options = (
-        make_option('-a', '--age', action='store', dest='age',
-            default=DEFAULT_AGE, type='int',
-            help='Number of hours back to consider objects new.'
-        ),
-        make_option('-s', '--start', action='store', dest='start_date',
-            default=None, type='string',
-            help='The start date for indexing within. Can be any dateutil-parsable string, recommended to be YYYY-MM-DDTHH:MM:SS.'
-        ),
-        make_option('-e', '--end', action='store', dest='end_date',
-            default=None, type='string',
-            help='The end date for indexing within. Can be any dateutil-parsable string, recommended to be YYYY-MM-DDTHH:MM:SS.'
-        ),
-        make_option('-b', '--batch-size', action='store', dest='batchsize',
-            default=None, type='int',
-            help='Number of items to index at once.'
-        ),
-        make_option('-r', '--remove', action='store_true', dest='remove',
-            default=False, help='Remove objects from the index that are no longer present in the database.'
-        ),
-        make_option("-u", "--using", action="append", dest="using",
-            default=[],
-            help='Update only the named backend (can be used multiple times). '
-                 'By default all backends will be updated.'
-        ),
-        make_option('-k', '--workers', action='store', dest='workers',
-            default=0, type='int',
-            help='Allows for the use multiple workers to parallelize indexing. Requires multiprocessing.'
-        ),
-        make_option('--nocommit', action='store_false', dest='commit',
-            default=True, help='Will pass commit=False to the backend.'
-        ),
-    )
-    option_list = LabelCommand.option_list + base_options
+# defined statically to be useable in rebuild_index
+options = {
+    ('-a', '--age'): {
+        'action': 'store',
+        'dest': 'age',
+        'default': None,
+        'type': int,
+        'help': 'Number of hours back to consider objects new.',
+    },
+    ('-s', '--start'): {
+        'action': 'store',
+        'dest': 'start_date',
+        'default': None,
+        'type': dateutil_parse,
+        'help': 'The start date for indexing within. Can be any dateutil-parsable string'
+                ', recommended to be YYYY-MM-DDTHH:MM:SS.',
+    },
+    ('-e', '--end'): {
+        'action': 'store',
+        'dest': 'end_date',
+        'default': None,
+        'type': dateutil_parse,
+        'help': 'The end date for indexing within. Can be any dateutil-parsable string'
+                ', recommended to be YYYY-MM-DDTHH:MM:SS.',
+    },
+    ('-b', '--batch-size'): {
+        'action': 'store',
+        'dest': 'batchsize',
+        'default': None,
+        'type': int,
+        'help': 'Number of items to index at once.',
+    },
+    ('-r', '--remove'): {
+        'action': 'store_true',
+        'dest': 'remove',
+        'default': False,
+        'help': 'Remove objects from the index that are no longer present in the database.',
+    },
+    ("-u", "--using"): {
+        'action': "append",
+        'dest': "using",
+        'default': haystack_connections.connections_info.keys(),
+        'help': 'Update only the named backend (can be used multiple times). '
+                'By default all backends will be updated.',
+    },
+    ('-k', '--workers'): {
+        'action': 'store',
+        'dest': 'workers',
+        'default': 0,
+        'type': int,
+        'help': 'Allows for the use of multiple workers to parallelize indexing. Requires multiprocessing.',
+    },
+    ('--nocommit',): {
+        'action': 'store_false',
+        'dest': 'commit',
+        'default': True,
+        'help': 'Will pass commit=False to the backend.',
+    },
+    ('app_or_model',): {
+        'nargs': '*',
+        'help': 'App label or Django content type (model name) to update the search index for.',
+    },
+}
 
-    def handle(self, *items, **options):
-        self.verbosity = int(options.get('verbosity', 1))
-        self.batchsize = options.get('batchsize', DEFAULT_BATCH_SIZE)
-        self.start_date = None
-        self.end_date = None
-        self.remove = options.get('remove', False)
-        self.workers = int(options.get('workers', 0))
-        self.commit = options.get('commit', True)
 
-        if sys.version_info < (2, 7):
-            warnings.warn('multiprocessing is disabled on Python 2.6 and earlier. '
-                          'See https://github.com/toastdriven/django-haystack/issues/1001')
-            self.workers = 0
+class Command(BaseCommand):
+    help = "Freshens the index for the given app(s) or model(s)."
 
-        self.backends = options.get('using')
-        if not self.backends:
-            self.backends = haystack_connections.connections_info.keys()
+    def add_arguments(self, parser):
+        for args, kwargs in options.items():
+            parser.add_argument(*args, **kwargs)
 
-        age = options.get('age', DEFAULT_AGE)
-        start_date = options.get('start_date')
-        end_date = options.get('end_date')
+    def handle(self, **options):
+        # put all options to self
+        for opt, val in options.items():
+            setattr(self, opt, val)
 
-        if age is not None:
-            self.start_date = now() - timedelta(hours=int(age))
+        if self.start_date is None and self.age is not None:
+            self.start_date = now() - timedelta(hours=self.age)
 
-        if start_date is not None:
-            from dateutil.parser import parse as dateutil_parse
+        if not self.app_or_model:
+            self.app_or_model = haystack_load_apps()
 
-            try:
-                self.start_date = dateutil_parse(start_date)
-            except ValueError:
-                pass
-
-        if end_date is not None:
-            from dateutil.parser import parse as dateutil_parse
-
-            try:
-                self.end_date = dateutil_parse(end_date)
-            except ValueError:
-                pass
-
-        if not items:
-            items = haystack_load_apps()
-
-        return super(Command, self).handle(*items, **options)
-
-    def handle_label(self, label, **options):
-        for using in self.backends:
-            try:
-                self.update_backend(label, using)
-            except:
-                logging.exception("Error updating %s using %s ", label, using)
-                raise
+        for app_or_model in self.app_or_model:
+            for using in self.using:
+                try:
+                    self.update_backend(app_or_model, using)
+                except:
+                    logging.exception("Error updating %s using %s ", app_or_model, using)
+                    raise
 
     def update_backend(self, label, using):
         from ...exceptions import NotHandled
@@ -181,7 +174,7 @@ class Command(LabelCommand):
                 index = unified_index.get_index(model)
             except NotHandled:
                 if self.verbosity >= 2:
-                    print("Skipping '%s' - no index." % model)
+                    self.stdout.write("Skipping '%s' - no index." % model)
                 continue
 
             if self.workers > 0:
@@ -196,7 +189,7 @@ class Command(LabelCommand):
             total = qs.count()
 
             if self.verbosity >= 1:
-                print(u"Indexing %d %s" % (total, force_text(model._meta.verbose_name_plural)))
+                self.stdout.write(u"Indexing %d %s" % (total, force_text(model._meta.verbose_name_plural)))
 
             batch_size = self.batchsize or backend.batch_size
 
@@ -207,9 +200,11 @@ class Command(LabelCommand):
                 end = min(start + batch_size, total)
 
                 if self.workers == 0:
-                    do_update(backend, index, qs, start, end, total, verbosity=self.verbosity, commit=self.commit)
+                    do_update(backend, index, qs, start, end, total,
+                              verbosity=self.verbosity, commit=self.commit)
                 else:
-                    ghetto_queue.append(('do_update', model, start, end, total, using, self.start_date, self.end_date, self.verbosity, self.commit))
+                    ghetto_queue.append(('do_update', model, start, end, total, using,
+                                         self.start_date, self.end_date, self.verbosity, self.commit))
 
             if self.workers > 0:
                 pool = multiprocessing.Pool(self.workers)
@@ -256,12 +251,11 @@ class Command(LabelCommand):
 
                 if stale_records:
                     if self.verbosity >= 1:
-                        print("  removing %d stale records." % len(stale_records))
+                        self.stdout.write("  removing %d stale records." % len(stale_records))
 
                     for rec_id in stale_records:
                         # Since the PK was not in the database list, we'll delete the record from the search index:
                         if self.verbosity >= 2:
-                            print("  removing %s." % rec_id)
+                            self.stdout.write("  removing %s." % rec_id)
 
                         backend.remove(rec_id, commit=self.commit)
-
