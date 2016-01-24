@@ -327,7 +327,7 @@ class CharPKMockModelSearchIndex(indexes.SearchIndex, indexes.Indexable):
 
 @override_settings(DEBUG=True)
 class SearchQuerySetTestCase(TestCase):
-    fixtures = ['bulk_data.json']
+    fixtures = ['initial_data.json', 'bulk_data.json']
 
     def setUp(self):
         super(SearchQuerySetTestCase, self).setUp()
@@ -853,6 +853,8 @@ class EmptySearchQuerySetTestCase(TestCase):
 @unittest.skipUnless(test_pickling, 'Skipping pickling tests')
 @override_settings(DEBUG=True)
 class PickleSearchQuerySetTestCase(TestCase):
+    fixtures = ['initial_data.json']
+
     def setUp(self):
         super(PickleSearchQuerySetTestCase, self).setUp()
         # Stow.

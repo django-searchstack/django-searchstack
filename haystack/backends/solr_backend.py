@@ -338,7 +338,7 @@ class SolrSearchBackend(BaseSearchBackend):
         return self._process_results(raw_results, result_class=result_class)
 
     def _process_results(self, raw_results, highlight=False, result_class=None, distance_point=None):
-        from haystack import connections
+        from .. import connections
         results = []
         hits = raw_results.hits
         facets = {}

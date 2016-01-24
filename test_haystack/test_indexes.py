@@ -135,6 +135,8 @@ class MROFieldsSearchChild(MROFieldsSearchIndexA, MROFieldsSearchIndexB):
 
 
 class SearchIndexTestCase(TestCase):
+    fixtures = ['initial_data.json']
+
     def setUp(self):
         super(SearchIndexTestCase, self).setUp()
         self.sb = connections['default'].get_backend()

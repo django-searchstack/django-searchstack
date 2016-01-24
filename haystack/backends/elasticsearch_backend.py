@@ -30,6 +30,7 @@ except ImportError:
     raise MissingDependency("The 'elasticsearch' backend requires the installation of 'elasticsearch'. Please refer to the documentation.")
 
 
+# FIXME: use dateutil instead?
 DATETIME_REGEX = re.compile(
     r'^(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2})T'
     r'(?P<hour>\d{2}):(?P<minute>\d{2}):(?P<second>\d{2})(\.\d+)?$')
