@@ -13,6 +13,8 @@ from .test_whoosh_backend import LiveWhooshRoundTripTestCase
 
 
 class SpellingSuggestionTestCase(LiveWhooshRoundTripTestCase):
+    fixtures = ['initial_data.json']
+
     def setUp(self):
         self.old_spelling_setting = settings.SEARCHSTACK_CONNECTIONS['whoosh'].get('INCLUDE_SPELLING', False)
         settings.SEARCHSTACK_CONNECTIONS['whoosh']['INCLUDE_SPELLING'] = True

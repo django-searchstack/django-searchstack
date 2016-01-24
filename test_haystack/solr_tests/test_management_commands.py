@@ -1,7 +1,4 @@
 # encoding: utf-8
-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 import datetime
 from tempfile import mkdtemp
 
@@ -178,7 +175,7 @@ class ManagementCommandTestCase(TestCase):
 
 
 class AppModelManagementCommandTestCase(TestCase):
-    fixtures = ['bulk_data.json']
+    fixtures = ['initial_data.json', 'bulk_data.json']
 
     def setUp(self):
         super(AppModelManagementCommandTestCase, self).setUp()
