@@ -26,7 +26,7 @@ before_install:
     - mkdir -p $HOME/download-cache
 
 install:
-    - pip install requests "Django${DJANGO_VERSION}"
+    - pip install requests "Django${DJANGO_VERSION}" coveralls
     - python setup.py clean build install
 
 before_script:
@@ -36,6 +36,9 @@ script:
     - python test_haystack/solr_tests/server/wait-for-solr
     - python setup.py test
 
+after_success:
+    - coveralls
+
 env:
     matrix:
         - DJANGO_VERSION=">=1.8,<1.9"
@@ -44,9 +47,6 @@ env:
 matrix:
     allow_failures:
         - python: "pypy"
-    exclude:
-       - python: 3.5
-         env: DJANGO_VERSION=">=1.7,<1.8"
 
 services:
     - elasticsearch
