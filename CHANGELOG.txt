@@ -1,5 +1,6 @@
 === 1.0.0pre1 (Unreleased) ===
 
+- Add Django 1.9 support
 - Change configuration setting namespace to SEARCHSTACK_
 - Remove long time ago deprecated API code
 - Remove python<2.7 and Django<1.7 compatibility code

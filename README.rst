@@ -2,11 +2,14 @@
 Django-Searchstack
 ========
 
+.. image:: https://img.shields.io/travis/rust-lang/rust.svg  
+   :target: https://travis-ci.org/django-searchstack/django-searchstack
+
 Django-Searchstack is a fork of Django-Haystack the aim of which is to
 deprecate a lot of unused/barely-used features, fix long standing bugs
 and add new substantial features. Currently it is under heavy development
 but whenever version 1.0 comes out, it will be mostly backwards-compatible
-with Haystack with a clear migration instructions.
+with Haystack with clear migration instructions.
 
 Django-Searchstack provides modular search for Django. It features a unified, familiar
 API that allows you to plug in different search backends (such as Solr_ and
@@ -30,12 +33,6 @@ Documentation
 =============
 
 Currently in development.
-
-Build Status
-============
-
-.. image:: https://travis-ci.org/django-searchstack/django-searchstack.svg?branch=master
-   :target: https://travis-ci.org/django-searchstack/django-searchstack
 
 Requirements
 ============
