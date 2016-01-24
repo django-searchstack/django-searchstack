@@ -2,7 +2,7 @@
 Django-Searchstack
 ========
 
-.. image:: https://img.shields.io/travis/rust-lang/rust.svg  
+.. image:: https://img.shields.io/travis/rust-lang/rust.svg?style=flat-square  
    :target: https://travis-ci.org/django-searchstack/django-searchstack
 
 Django-Searchstack is a fork of Django-Haystack the aim of which is to
