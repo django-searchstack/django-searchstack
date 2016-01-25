@@ -1,9 +1,5 @@
 #!/usr/bin/env python
 # encoding: utf-8
-
-# n.b. we can't have unicode_literals here due to http://bugs.python.org/setuptools/issue152
-from __future__ import absolute_import, division, print_function
-
 try:
     from setuptools import setup
 except ImportError:
@@ -12,6 +8,7 @@ except ImportError:
     from setuptools import setup
 
 install_requires = [
+    'python-dateutil',
     'Django',
 ]
 
@@ -28,23 +25,23 @@ tests_require = [
 ]
 
 setup(
-    name='django-haystack',
-    version='2.5.dev0',
+    name='django-searchstack',
+    version='1.0dev0',
     description='Pluggable search for Django.',
     author='Daniel Lindsley',
     author_email='daniel@toastdriven.com',
     long_description=open('README.rst', 'r').read(),
-    url='http://haystacksearch.org/',
+    url='https://github.com/django-searchstack/django-searchstack',
     packages=[
-        'haystack',
-        'haystack.backends',
-        'haystack.management',
-        'haystack.management.commands',
-        'haystack.templatetags',
-        'haystack.utils',
+        'searchstack',
+        'searchstack.backends',
+        'searchstack.management',
+        'searchstack.management.commands',
+        'searchstack.templatetags',
+        'searchstack.utils',
     ],
     package_data={
-        'haystack': [
+        'searchstack': [
             'templates/panels/*',
             'templates/search_configuration/*',
         ]
@@ -64,5 +61,5 @@ setup(
     zip_safe=False,
     install_requires=install_requires,
     tests_require=tests_require,
-    test_suite="test_haystack.run_tests.run_all",
+    test_suite="test_searchstack.run_tests.run_all",
 )
