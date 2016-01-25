@@ -4,6 +4,8 @@ Django-Searchstack
 
 .. image:: https://img.shields.io/travis/rust-lang/rust.svg?style=flat-square  
    :target: https://travis-ci.org/django-searchstack/django-searchstack
+.. image:: https://img.shields.io/coveralls/jekyll/jekyll.svg?style=flat-square
+   :target: https://coveralls.io/github/django-searchstack/django-searchstack
 
 Django-Searchstack is a fork of Django-Haystack the aim of which is to
 deprecate a lot of unused/barely-used features, fix long standing bugs
