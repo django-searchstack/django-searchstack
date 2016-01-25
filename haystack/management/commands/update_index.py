@@ -5,7 +5,7 @@ from datetime import timedelta
 
 from dateutil.parser import parse as dateutil_parse
 from django.core.management.base import BaseCommand
-from django.db import close_old_connections, reset_queries
+from django.db import connections, reset_queries
 from django.utils.encoding import force_text, smart_bytes
 from django.utils.timezone import now
 
@@ -14,40 +14,30 @@ from ...query import SearchQuerySet
 from ...utils.app_loading import haystack_get_models, haystack_load_apps
 
 
-def worker(bits):
-    # We need to reset the connections, otherwise the different processes
-    # will try to share the connection, which causes things to blow up.
-    from django.db import connections
+def worker(queue):
+    while True:
+        # wait for a job
+        bits = queue.get()
 
-    for alias, info in connections.databases.items():
-        # We need to also tread lightly with SQLite, because blindly wiping
-        # out connections (via ``... = {}``) destroys in-memory DBs.
-        if 'sqlite3' not in info['ENGINE']:
-            try:
-                close_old_connections()
-                if isinstance(connections._connections, dict):
-                    del connections._connections[alias]
-                else:
-                    delattr(connections._connections, alias)
-            except KeyError:
-                pass
+        # Check job type and do it. There are two types of jobs: do_update (which is called multiple times
+        # during worker lifetime) and close (which is called before killing the process)
+        if bits[0] == 'close':
+            # Django makes sure that when new process/thread hits DB it gets a new connection
+            # (or connections). Such connections won't be usable for other threads so let's close them.
+            connections.close_all()
+            queue.task_done()  # mark job as done and exit the loop
+            break
+        elif bits[0] == 'do_update':
+            func, model, start, end, total, using, start_date, end_date, verbosity, commit = bits
 
-    if bits[0] == 'do_update':
-        func, model, start, end, total, using, start_date, end_date, verbosity, commit = bits
-    elif bits[0] == 'do_remove':
-        func, model, pks_seen, start, upper_bound, using, verbosity, commit = bits
-    else:
-        return
+            unified_index = haystack_connections[using].get_unified_index()
+            index = unified_index.get_index(model)
+            backend = haystack_connections[using].get_backend()
 
-    unified_index = haystack_connections[using].get_unified_index()
-    index = unified_index.get_index(model)
-    backend = haystack_connections[using].get_backend()
+            qs = index.build_queryset(start_date=start_date, end_date=end_date)
+            do_update(backend, index, qs, start, end, total, verbosity=verbosity, commit=commit)
 
-    if func == 'do_update':
-        qs = index.build_queryset(start_date=start_date, end_date=end_date)
-        do_update(backend, index, qs, start, end, total, verbosity=verbosity, commit=commit)
-    else:
-        raise NotImplementedError('Unknown function %s' % func)
+        queue.task_done()  # mark job as done
 
 
 def do_update(backend, index, qs, start, end, total, verbosity=1, commit=True):
@@ -62,10 +52,9 @@ def do_update(backend, index, qs, start, end, total, verbosity=1, commit=True):
         else:
             print("  indexed %s - %d of %d (by %s)." % (start + 1, end, total, os.getpid()))
 
-    # FIXME: Get the right backend.
     backend.update(index, current_qs, commit=commit)
 
-    # Clear out the DB connections queries because it bloats up RAM.
+    # cleanup connection query log when in DEBUG mode
     reset_queries()
 
 
@@ -152,6 +141,18 @@ class Command(BaseCommand):
         if not self.app_or_model:
             self.app_or_model = haystack_load_apps()
 
+        # setup workers if needed
+        if self.workers > 0:
+            from multiprocessing import JoinableQueue, Process
+
+            # queue to communicate with workers with max size of double the workers so that workers always
+            # have waiting tasks before they finish previous ones
+            self.queue = JoinableQueue(self.workers * 2)
+            # create workers and start them
+            self.processes = [Process(target=worker, args=(self.queue,)) for i in range(self.workers)]
+            for process in self.processes:
+                process.start()
+
         for app_or_model in self.app_or_model:
             for using in self.using:
                 try:
@@ -160,14 +161,20 @@ class Command(BaseCommand):
                     logging.exception("Error updating %s using %s ", app_or_model, using)
                     raise
 
+        # send 'close' instruction to workers and wait for them to terminate
+        if self.workers > 0:
+            self.queue.join()  # wait for outstanding tasks to be finished
+            for i in range(self.workers):
+                self.queue.put(('close',))
+            self.queue.join()
+            for process in self.processes:
+                process.join()
+
     def update_backend(self, label, using):
         from ...exceptions import NotHandled
 
         backend = haystack_connections[using].get_backend()
         unified_index = haystack_connections[using].get_unified_index()
-
-        if self.workers > 0:
-            import multiprocessing
 
         for model in haystack_get_models(label):
             try:
@@ -177,24 +184,14 @@ class Command(BaseCommand):
                     self.stdout.write("Skipping '%s' - no index." % model)
                 continue
 
-            if self.workers > 0:
-                # workers resetting connections leads to references to models / connections getting
-                # stale and having their connection disconnected from under them. Resetting before
-                # the loop continues and it accesses the ORM makes it better.
-                close_old_connections()
-
             qs = index.build_queryset(using=using, start_date=self.start_date,
                                       end_date=self.end_date)
-
             total = qs.count()
 
             if self.verbosity >= 1:
                 self.stdout.write(u"Indexing %d %s" % (total, force_text(model._meta.verbose_name_plural)))
 
             batch_size = self.batchsize or backend.batch_size
-
-            if self.workers > 0:
-                ghetto_queue = []
 
             for start in range(0, total, batch_size):
                 end = min(start + batch_size, total)
@@ -203,25 +200,21 @@ class Command(BaseCommand):
                     do_update(backend, index, qs, start, end, total,
                               verbosity=self.verbosity, commit=self.commit)
                 else:
-                    ghetto_queue.append(('do_update', model, start, end, total, using,
-                                         self.start_date, self.end_date, self.verbosity, self.commit))
-
-            if self.workers > 0:
-                pool = multiprocessing.Pool(self.workers)
-                pool.map(worker, ghetto_queue)
-                pool.close()
-                pool.join()
+                    self.queue.put(('do_update', model, start, end, total, using,
+                                    self.start_date, self.end_date, self.verbosity, self.commit))
 
             if self.remove:
-                if self.start_date or self.end_date or total <= 0:
+                if self.start_date or self.end_date:
                     # They're using a reduced set, which may not incorporate
                     # all pks. Rebuild the list with everything.
-                    qs = index.index_queryset().values_list('pk', flat=True)
-                    database_pks = set(smart_bytes(pk) for pk in qs)
+                    qs = index.index_queryset()
 
-                    total = len(database_pks)
-                else:
-                    database_pks = set(smart_bytes(pk) for pk in qs.values_list('pk', flat=True))
+                if not qs:
+                    # nothing to remove, go to next model
+                    continue
+
+                database_pks = set(smart_bytes(pk) for pk in qs.values_list('pk', flat=True))
+                total = len(database_pks)
 
                 # Since records may still be in the search index but not the local database
                 # we'll use that to create batches for processing.
@@ -254,7 +247,8 @@ class Command(BaseCommand):
                         self.stdout.write("  removing %d stale records." % len(stale_records))
 
                     for rec_id in stale_records:
-                        # Since the PK was not in the database list, we'll delete the record from the search index:
+                        # Since the PK was not in the database list,
+                        # we'll delete the record from the search index:
                         if self.verbosity >= 2:
                             self.stdout.write("  removing %s." % rec_id)
 
