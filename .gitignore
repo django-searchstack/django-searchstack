@@ -15,5 +15,5 @@ env3
 .eggs
 .coverage
 
-test_haystack/solr_tests/server/solr-4.6.0.tgz
-test_haystack/solr_tests/server/solr4/
+test_searchstack/solr_tests/server/solr-4.6.0.tgz
+test_searchstack/solr_tests/server/solr4/
