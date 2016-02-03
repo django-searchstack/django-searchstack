@@ -71,8 +71,9 @@ class ConnectionHandlerTestCase(TestCase):
     def test_get_unified_index(self):
         ch = loading.ConnectionHandler({
             'default': {
-                'ENGINE': 'searchstack.backends.simple_backend.SimpleEngine',
-            }
+                'ENGINE': 'searchstack.backends.solr_backend.SolrEngine',
+                'URL': 'http://localhost:9001/solr/test_default',
+            },
         })
         ui = ch['default'].get_unified_index()
         klass, address = repr(ui).strip('<>').split(' object at ')

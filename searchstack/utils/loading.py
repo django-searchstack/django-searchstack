@@ -39,8 +39,6 @@ def load_backend(full_backend_path):
 
       * searchstack.backends.solr.SolrEngine
       * searchstack.backends.xapian.XapianEngine (third-party)
-      * searchstack.backends.whoosh.WhooshEngine
-      * searchstack.backends.simple.SimpleEngine
 
     If you've implemented a custom backend, you can provide the path to
     your backend & matching ``Engine`` class. For example::
@@ -93,7 +91,7 @@ class ConnectionHandler(object):
             raise ImproperlyConfigured("The key '%s' isn't an available connection." % alias)
 
         if not conn.get('ENGINE'):
-            conn['ENGINE'] = 'searchstack.backends.simple_backend.SimpleEngine'
+            raise ImproperlyConfigured("ENGINE must be specified for connection '%s'" % alias)
 
     def __getitem__(self, key):
         if key in self._connections:
