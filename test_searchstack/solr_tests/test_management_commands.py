@@ -162,17 +162,6 @@ class ManagementCommandTestCase(TestCase):
         call_command('update_index', verbosity=2, workers=2, batchsize=5, commit=False)
         self.assertEqual(self.solr.search('*:*').hits, 0)
 
-    def test_build_schema_wrong_backend(self):
-
-        settings.SEARCHSTACK_CONNECTIONS['whoosh'] = {
-            'ENGINE': 'searchstack.backends.whoosh_backend.WhooshEngine',
-            'PATH': mkdtemp(prefix='dummy-path-'),
-        }
-
-        connections['whoosh']._index = self.ui
-        self.assertRaises(ImproperlyConfigured, call_command, 'build_solr_schema',
-                          using='whoosh', interactive=False)
-
 
 class AppModelManagementCommandTestCase(TestCase):
     fixtures = ['initial_data.json', 'bulk_data.json']

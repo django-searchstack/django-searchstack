@@ -13,7 +13,7 @@ from searchstack import connections, indexes, reset_search_queries
 from searchstack.exceptions import SkipDocument
 from searchstack.inputs import AutoQuery
 from searchstack.models import SearchResult
-from searchstack.query import RelatedSearchQuerySet, SearchQuerySet, SQ
+from searchstack.query import SQ, RelatedSearchQuerySet, SearchQuerySet
 from searchstack.utils import log as logging
 from searchstack.utils.geo import Point
 from searchstack.utils.loading import UnifiedIndex
@@ -21,6 +21,7 @@ from searchstack.utils.loading import UnifiedIndex
 from ..core.models import AFourthMockModel, AnotherMockModel, ASixthMockModel, MockModel
 from ..mocks import MockSearchResult
 from ..utils import unittest
+from .testcases import ElasticSearchTestCase, clear_elasticsearch_index
 
 test_pickling = True
 
@@ -31,20 +32,6 @@ except ImportError:
         import pickle
     except ImportError:
         test_pickling = False
-
-
-def clear_elasticsearch_index():
-    # Wipe it clean.
-    raw_es = elasticsearch.Elasticsearch(settings.SEARCHSTACK_CONNECTIONS['elasticsearch']['URL'])
-    try:
-        raw_es.indices.delete(index=settings.SEARCHSTACK_CONNECTIONS['elasticsearch']['INDEX_NAME'])
-        raw_es.indices.refresh()
-    except elasticsearch.TransportError:
-        pass
-
-    # Since we've just completely deleted the index, we'll reset setup_complete so the next access will
-    # correctly define the mappings:
-    connections['elasticsearch'].get_backend().setup_complete = False
 
 
 class ElasticsearchMockSearchIndex(indexes.SearchIndex, indexes.Indexable):
@@ -226,15 +213,13 @@ class TestSettings(TestCase):
         self.assertEqual(backend.conn.transport.max_retries, 42)
 
 
-class ElasticsearchSearchBackendTestCase(TestCase):
+class ElasticsearchSearchBackendTestCase(ElasticSearchTestCase):
     def setUp(self):
         super(ElasticsearchSearchBackendTestCase, self).setUp()
 
-        # Wipe it clean.
-        self.raw_es = elasticsearch.Elasticsearch(settings.SEARCHSTACK_CONNECTIONS['elasticsearch']['URL'])
-        clear_elasticsearch_index()
+        clear_elasticsearch_index('elasticsearch')
 
-        # Stow.
+        self.raw_es = elasticsearch.Elasticsearch(settings.SEARCHSTACK_CONNECTIONS['elasticsearch']['URL'])
         self.old_ui = connections['elasticsearch'].get_unified_index()
         self.ui = UnifiedIndex()
         self.smmi = ElasticsearchMockSearchIndex()
@@ -354,7 +339,6 @@ class ElasticsearchSearchBackendTestCase(TestCase):
             sorted([x['_source']['id'] for x in res['hits']]),
             ['core.mockmodel.1', 'core.mockmodel.2']
         )
-
 
     def test_remove(self):
         self.sb.update(self.smmi, self.sample_objs)
@@ -616,9 +600,6 @@ class LiveElasticsearchSearchQueryTestCase(TestCase):
     def setUp(self):
         super(LiveElasticsearchSearchQueryTestCase, self).setUp()
 
-        # Wipe it clean.
-        clear_elasticsearch_index()
-
         # Stow.
         self.old_ui = connections['elasticsearch'].get_unified_index()
         self.ui = UnifiedIndex()
@@ -668,7 +649,7 @@ lssqstc_all_loaded = None
 
 
 @override_settings(DEBUG=True)
-class LiveElasticsearchSearchQuerySetTestCase(TestCase):
+class LiveElasticsearchSearchQuerySetTestCase(ElasticSearchTestCase):
     """Used to test actual implementation details of the SearchQuerySet."""
     fixtures = ['bulk_data.json']
 
@@ -690,9 +671,6 @@ class LiveElasticsearchSearchQuerySetTestCase(TestCase):
 
         if lssqstc_all_loaded is None:
             lssqstc_all_loaded = True
-
-            # Wipe it clean.
-            clear_elasticsearch_index()
 
             # Force indexing of the content.
             self.smmi.update(using='elasticsearch')
@@ -1028,7 +1006,7 @@ class LiveElasticsearchSpellingTestCase(TestCase):
         self.sqs = SearchQuerySet('elasticsearch')
 
         # Wipe it clean.
-        clear_elasticsearch_index()
+        clear_elasticsearch_index('elasticsearch')
 
         # Reboot the schema.
         self.sb = connections['elasticsearch'].get_backend()
@@ -1048,14 +1026,11 @@ class LiveElasticsearchSpellingTestCase(TestCase):
         self.assertEqual(self.sqs.spelling_suggestion('srchindex instanc'), 'searchindex instance')
 
 
-class LiveElasticsearchMoreLikeThisTestCase(TestCase):
+class LiveElasticsearchMoreLikeThisTestCase(ElasticSearchTestCase):
     fixtures = ['bulk_data.json']
 
     def setUp(self):
         super(LiveElasticsearchMoreLikeThisTestCase, self).setUp()
-
-        # Wipe it clean.
-        clear_elasticsearch_index()
 
         self.old_ui = connections['elasticsearch'].get_unified_index()
         self.ui = UnifiedIndex()
@@ -1103,7 +1078,7 @@ class LiveElasticsearchMoreLikeThisTestCase(TestCase):
         self.assertTrue(isinstance(self.sqs.result_class(MockSearchResult).more_like_this(MockModel.objects.get(pk=1))[0], MockSearchResult))
 
 
-class LiveElasticsearchAutocompleteTestCase(TestCase):
+class LiveElasticsearchAutocompleteTestCase(ElasticSearchTestCase):
     fixtures = ['bulk_data.json']
 
     def setUp(self):
@@ -1117,9 +1092,6 @@ class LiveElasticsearchAutocompleteTestCase(TestCase):
         connections['elasticsearch']._index = self.ui
 
         self.sqs = SearchQuerySet('elasticsearch')
-
-        # Wipe it clean.
-        clear_elasticsearch_index()
 
         # Reboot the schema.
         self.sb = connections['elasticsearch'].get_backend()
@@ -1198,12 +1170,9 @@ class LiveElasticsearchAutocompleteTestCase(TestCase):
         self.assertEqual(set([result.pk for result in autocomplete_4]), set(['20']))
 
 
-class LiveElasticsearchRoundTripTestCase(TestCase):
+class LiveElasticsearchRoundTripTestCase(ElasticSearchTestCase):
     def setUp(self):
         super(LiveElasticsearchRoundTripTestCase, self).setUp()
-
-        # Wipe it clean.
-        clear_elasticsearch_index()
 
         # Stow.
         self.old_ui = connections['elasticsearch'].get_unified_index()
@@ -1247,14 +1216,11 @@ class LiveElasticsearchRoundTripTestCase(TestCase):
 
 
 @unittest.skipUnless(test_pickling, 'Skipping pickling tests')
-class LiveElasticsearchPickleTestCase(TestCase):
+class LiveElasticsearchPickleTestCase(ElasticSearchTestCase):
     fixtures = ['bulk_data.json']
 
     def setUp(self):
         super(LiveElasticsearchPickleTestCase, self).setUp()
-
-        # Wipe it clean.
-        clear_elasticsearch_index()
 
         # Stow.
         self.old_ui = connections['elasticsearch'].get_unified_index()
@@ -1287,15 +1253,11 @@ class LiveElasticsearchPickleTestCase(TestCase):
         self.assertEqual(like_a_cuke[0].id, results[0].id)
 
 
-class ElasticsearchBoostBackendTestCase(TestCase):
+class ElasticsearchBoostBackendTestCase(ElasticSearchTestCase):
     def setUp(self):
         super(ElasticsearchBoostBackendTestCase, self).setUp()
 
-        # Wipe it clean.
         self.raw_es = elasticsearch.Elasticsearch(settings.SEARCHSTACK_CONNECTIONS['elasticsearch']['URL'])
-        clear_elasticsearch_index()
-
-        # Stow.
         self.old_ui = connections['elasticsearch'].get_unified_index()
         self.ui = UnifiedIndex()
         self.smmi = ElasticsearchBoostMockSearchIndex()
@@ -1357,7 +1319,7 @@ class RecreateIndexTestCase(TestCase):
             settings.SEARCHSTACK_CONNECTIONS['elasticsearch']['URL'])
 
     def test_recreate_index(self):
-        clear_elasticsearch_index()
+        clear_elasticsearch_index('elasticsearch')
 
         sb = connections['elasticsearch'].get_backend()
         sb.silently_fail = True
@@ -1377,12 +1339,9 @@ class RecreateIndexTestCase(TestCase):
                          "Mapping after recreating the index differs from the original one")
 
 
-class ElasticsearchFacetingTestCase(TestCase):
+class ElasticsearchFacetingTestCase(ElasticSearchTestCase):
     def setUp(self):
         super(ElasticsearchFacetingTestCase, self).setUp()
-
-        # Wipe it clean.
-        clear_elasticsearch_index()
 
         # Stow.
         self.old_ui = connections['elasticsearch'].get_unified_index()

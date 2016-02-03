@@ -1,6 +1,4 @@
 # encoding: utf-8
-from tempfile import mkdtemp
-
 SECRET_KEY = "Please do not spew DeprecationWarnings"
 
 # Haystack settings for running tests.
@@ -45,24 +43,17 @@ SEARCHSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'test_searchstack.mocks.MockEngine',
     },
-    'whoosh': {
-        'ENGINE': 'searchstack.backends.whoosh_backend.WhooshEngine',
-        'PATH': mkdtemp(prefix='test_whoosh_query'),
-        'INCLUDE_SPELLING': True,
-    },
-    'filtered_whoosh': {
-        'ENGINE': 'searchstack.backends.whoosh_backend.WhooshEngine',
-        'PATH': mkdtemp(prefix='searchstack-multipleindex-filtered-whoosh-tests-'),
-        'EXCLUDED_INDEXES': ['test_searchstack.multipleindex.search_indexes.BarIndex'],
-    },
     'elasticsearch': {
         'ENGINE': 'searchstack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
         'URL': '127.0.0.1:9200/',
         'INDEX_NAME': 'test_default',
         'INCLUDE_SPELLING': True,
     },
-    'simple': {
-        'ENGINE': 'searchstack.backends.simple_backend.SimpleEngine',
+    'filtered_elasticsearch': {
+        'ENGINE': 'searchstack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'URL': '127.0.0.1:9200/',
+        'INDEX_NAME': 'test_filtered',
+        'EXCLUDED_INDEXES': ['test_searchstack.multipleindex.search_indexes.BarIndex'],
     },
     'solr': {
         'ENGINE': 'searchstack.backends.solr_backend.SolrEngine',
