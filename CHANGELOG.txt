@@ -1,5 +1,6 @@
 === 1.0.0pre1 (Unreleased) ===
 
+- Replace default value for field default to None since field value becomes None if default is not provided
 - Remove simple_backend (which was useless) and whoosh_backend (which could be reborn as a third party project)
 - Rename top level module and other 'haystack*' names to 'searchstack'
 - Add Django 1.9 support

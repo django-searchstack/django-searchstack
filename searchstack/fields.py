@@ -8,10 +8,6 @@ from .exceptions import SearchFieldError
 from .utils import get_model_ct_tuple
 
 
-class NOT_PROVIDED:
-    pass
-
-
 # FIXME: use dateutil instead?
 DATETIME_REGEX = re.compile('^(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2})(T|\s+)(?P<hour>\d{2}):(?P<minute>\d{2}):(?P<second>\d{2}).*?$')
 
@@ -24,7 +20,7 @@ class SearchField(object):
 
     def __init__(self, model_attr=None, use_template=False, template_name=None,
                  document=False, indexed=True, stored=True, faceted=False,
-                 default=NOT_PROVIDED, null=False, index_fieldname=None,
+                 default=None, null=False, index_fieldname=None,
                  facet_class=None, boost=1.0, weight=None):
         # Track what the index thinks this field is called.
         self.instance_name = None
@@ -58,7 +54,7 @@ class SearchField(object):
 
     def has_default(self):
         """Returns a boolean of whether this field has a default value."""
-        return self._default is not NOT_PROVIDED
+        return self._default is not None
 
     @property
     def default(self):
