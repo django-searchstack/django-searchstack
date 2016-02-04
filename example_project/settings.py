@@ -1,6 +1,4 @@
 # encoding: utf-8
-import os
-
 from django.conf import settings
 
 SECRET_KEY = 'CHANGE ME'
@@ -27,19 +25,4 @@ SEARCHSTACK_CONNECTIONS = {
         'URL': 'http://localhost:9200',
         'INDEX_NAME': 'example_project'
     },
-    'whoosh': {
-        # For Whoosh:
-        'ENGINE': 'searchstack.backends.whoosh_backend.WhooshEngine',
-        'PATH': os.path.join(os.path.dirname(__file__), 'whoosh_index'),
-        'INCLUDE_SPELLING': True,
-    },
-    'simple': {
-        # For Simple:
-        'ENGINE': 'searchstack.backends.simple_backend.SimpleEngine',
-    },
-    # 'xapian': {
-    #     # For Xapian (requires the third-party install):
-    #     'ENGINE': 'xapian_backend.XapianEngine',
-    #     'PATH': os.path.join(os.path.dirname(__file__), 'xapian_index'),
-    # }
 }

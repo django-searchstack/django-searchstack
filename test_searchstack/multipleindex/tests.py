@@ -6,12 +6,12 @@ from searchstack.exceptions import NotHandled
 from searchstack.query import SearchQuerySet
 from searchstack.signals import BaseSignalProcessor
 
-from ..whoosh_tests.testcases import WhooshTestCase
+from ..elasticsearch_tests.testcases import ElasticSearchTestCase
 from .models import Bar, Foo
 from .search_indexes import BarIndex, FooIndex
 
 
-class MultipleIndexTestCase(WhooshTestCase):
+class MultipleIndexTestCase(ElasticSearchTestCase):
     def setUp(self):
         super(MultipleIndexTestCase, self).setUp()
 
@@ -19,8 +19,8 @@ class MultipleIndexTestCase(WhooshTestCase):
         self.fi = self.ui.get_index(Foo)
         self.bi = self.ui.get_index(Bar)
         self.solr_backend = connections['solr'].get_backend()
-        self.whoosh_backend = connections['whoosh'].get_backend()
-        self.filtered_whoosh_backend = connections['filtered_whoosh'].get_backend()
+        self.elasticsearch_backend = connections['elasticsearch'].get_backend()
+        self.filtered_elasticsearch_backend = connections['filtered_elasticsearch'].get_backend()
 
         Foo.objects.bulk_create([
             Foo(title='Haystack test', body='foo 1'),
@@ -34,7 +34,7 @@ class MultipleIndexTestCase(WhooshTestCase):
         ])
 
         self.fi.reindex(using='solr')
-        self.fi.reindex(using='whoosh')
+        self.fi.reindex(using='elasticsearch')
         self.bi.reindex(using='solr')
 
     def tearDown(self):
@@ -45,7 +45,7 @@ class MultipleIndexTestCase(WhooshTestCase):
     def test_index_update_object_using(self):
         results = self.solr_backend.search('foo')
         self.assertEqual(results['hits'], 2)
-        results = self.whoosh_backend.search('foo')
+        results = self.elasticsearch_backend.search('foo')
         self.assertEqual(results['hits'], 2)
 
         foo_3 = Foo.objects.create(
@@ -56,19 +56,19 @@ class MultipleIndexTestCase(WhooshTestCase):
         self.fi.update_object(foo_3, using='solr')
         results = self.solr_backend.search('foo')
         self.assertEqual(results['hits'], 3)
-        results = self.whoosh_backend.search('foo')
+        results = self.elasticsearch_backend.search('foo')
         self.assertEqual(results['hits'], 2)
 
-        self.fi.update_object(foo_3, using='whoosh')
+        self.fi.update_object(foo_3, using='elasticsearch')
         results = self.solr_backend.search('foo')
         self.assertEqual(results['hits'], 3)
-        results = self.whoosh_backend.search('foo')
+        results = self.elasticsearch_backend.search('foo')
         self.assertEqual(results['hits'], 3)
 
     def test_index_remove_object_using(self):
         results = self.solr_backend.search('foo')
         self.assertEqual(results['hits'], 2)
-        results = self.whoosh_backend.search('foo')
+        results = self.elasticsearch_backend.search('foo')
         self.assertEqual(results['hits'], 2)
 
         foo_1 = Foo.objects.get(pk=1)
@@ -76,54 +76,54 @@ class MultipleIndexTestCase(WhooshTestCase):
         self.fi.remove_object(foo_1, using='solr')
         results = self.solr_backend.search('foo')
         self.assertEqual(results['hits'], 1)
-        results = self.whoosh_backend.search('foo')
+        results = self.elasticsearch_backend.search('foo')
         self.assertEqual(results['hits'], 2)
 
-        self.fi.remove_object(foo_1, using='whoosh')
+        self.fi.remove_object(foo_1, using='elasticsearch')
         results = self.solr_backend.search('foo')
         self.assertEqual(results['hits'], 1)
-        results = self.whoosh_backend.search('foo')
+        results = self.elasticsearch_backend.search('foo')
         self.assertEqual(results['hits'], 1)
 
     def test_index_clear_using(self):
         results = self.solr_backend.search('foo')
         self.assertEqual(results['hits'], 2)
-        results = self.whoosh_backend.search('foo')
+        results = self.elasticsearch_backend.search('foo')
         self.assertEqual(results['hits'], 2)
 
         self.fi.clear(using='solr')
         results = self.solr_backend.search('foo')
         self.assertEqual(results['hits'], 0)
-        results = self.whoosh_backend.search('foo')
+        results = self.elasticsearch_backend.search('foo')
         self.assertEqual(results['hits'], 2)
 
-        self.fi.clear(using='whoosh')
+        self.fi.clear(using='elasticsearch')
         results = self.solr_backend.search('foo')
         self.assertEqual(results['hits'], 0)
-        results = self.whoosh_backend.search('foo')
+        results = self.elasticsearch_backend.search('foo')
         self.assertEqual(results['hits'], 0)
 
     def test_index_update_using(self):
         self.fi.clear(using='solr')
-        self.fi.clear(using='whoosh')
+        self.fi.clear(using='elasticsearch')
         self.bi.clear(using='solr')
-        self.bi.clear(using='whoosh')
+        self.bi.clear(using='elasticsearch')
 
         results = self.solr_backend.search('foo')
         self.assertEqual(results['hits'], 0)
-        results = self.whoosh_backend.search('foo')
+        results = self.elasticsearch_backend.search('foo')
         self.assertEqual(results['hits'], 0)
 
         self.fi.update(using='solr')
         results = self.solr_backend.search('foo')
         self.assertEqual(results['hits'], 2)
-        results = self.whoosh_backend.search('foo')
+        results = self.elasticsearch_backend.search('foo')
         self.assertEqual(results['hits'], 0)
 
-        self.fi.update(using='whoosh')
+        self.fi.update(using='elasticsearch')
         results = self.solr_backend.search('foo')
         self.assertEqual(results['hits'], 2)
-        results = self.whoosh_backend.search('foo')
+        results = self.elasticsearch_backend.search('foo')
         self.assertEqual(results['hits'], 2)
 
     def test_searchqueryset_using(self):
@@ -137,9 +137,9 @@ class MultipleIndexTestCase(WhooshTestCase):
         self.assertEqual(sqs.using('solr').models(Foo).count(), 2)
         self.assertEqual(sqs.using('solr').models(Bar).count(), 3)
 
-        self.assertEqual(sqs.using('whoosh').count(), 2)
-        self.assertEqual(sqs.using('whoosh').models(Foo).count(), 2)
-        self.assertEqual(sqs.using('whoosh').models(Bar).count(), 0)
+        self.assertEqual(sqs.using('elasticsearch').count(), 2)
+        self.assertEqual(sqs.using('elasticsearch').models(Foo).count(), 2)
+        self.assertEqual(sqs.using('elasticsearch').models(Bar).count(), 0)
 
     def test_searchquery_using(self):
         sq = connections['solr'].get_query()
@@ -152,11 +152,11 @@ class MultipleIndexTestCase(WhooshTestCase):
         self.assertEqual(sq.get_count(), 5)
 
         # Swap the ``SearchQuery`` used.
-        sq = sq.using('whoosh')
+        sq = sq.using('elasticsearch')
         self.assertEqual(sq.get_count(), 2)
 
     def test_excluded_indexes(self):
-        wui = connections['filtered_whoosh'].get_unified_index()
+        wui = connections['filtered_elasticsearch'].get_unified_index()
         self.assertTrue(any(isinstance(i, FooIndex) for i in wui.collect_indexes()))
         self.assertFalse(any(isinstance(i, BarIndex) for i in wui.collect_indexes()))
 
@@ -167,14 +167,14 @@ class MultipleIndexTestCase(WhooshTestCase):
         self.assertRaises(NotHandled, wui.get_index, Bar)
 
     def test_filtered_index_update(self):
-        for i in ('whoosh', 'filtered_whoosh'):
+        for i in ('elasticsearch', 'filtered_elasticsearch'):
             self.fi.clear(using=i)
             self.fi.update(using=i)
 
-        results = self.whoosh_backend.search('foo')
+        results = self.elasticsearch_backend.search('foo')
         self.assertEqual(results['hits'], 2)
 
-        results = self.filtered_whoosh_backend.search('foo')
+        results = self.filtered_elasticsearch_backend.search('foo')
         self.assertEqual(results['hits'], 1, "Filtered backend should only contain one record")
 
 
@@ -188,7 +188,7 @@ class TestSignalProcessor(BaseSignalProcessor):
         super(TestSignalProcessor, self).teardown()
 
 
-class SignalProcessorTestCase(WhooshTestCase):
+class SignalProcessorTestCase(ElasticSearchTestCase):
     def setUp(self):
         super(SignalProcessorTestCase, self).setUp()
 
@@ -200,7 +200,7 @@ class SignalProcessorTestCase(WhooshTestCase):
         self.fi = self.ui.get_index(Foo)
         self.bi = self.ui.get_index(Bar)
         self.solr_backend = connections['solr'].get_backend()
-        self.whoosh_backend = connections['whoosh'].get_backend()
+        self.elasticsearch_backend = connections['elasticsearch'].get_backend()
 
         self.foo_1 = Foo.objects.create(
             title='Haystack test',
@@ -224,7 +224,7 @@ class SignalProcessorTestCase(WhooshTestCase):
         )
 
         self.fi.reindex(using='solr')
-        self.fi.reindex(using='whoosh')
+        self.fi.reindex(using='elasticsearch')
         self.bi.reindex(using='solr')
 
     def tearDown(self):
@@ -263,11 +263,11 @@ class SignalProcessorTestCase(WhooshTestCase):
         self.assertEqual(sqs.using('solr').count(), 5)
         self.assertEqual(sqs.using('solr').models(Foo).count(), 2)
         self.assertEqual(sqs.using('solr').models(Bar).count(), 3)
-        self.assertEqual(sqs.using('whoosh').count(), 2)
-        self.assertEqual(sqs.using('whoosh').models(Foo).count(), 2)
+        self.assertEqual(sqs.using('elasticsearch').count(), 2)
+        self.assertEqual(sqs.using('elasticsearch').models(Foo).count(), 2)
 
         self.assertEqual(sqs.using('solr').models(Foo).order_by('django_id')[0].text, 'foo 1')
-        self.assertEqual(sqs.using('whoosh').models(Foo).order_by('django_id')[0].text, 'foo 1')
+        self.assertEqual(sqs.using('elasticsearch').models(Foo).order_by('django_id')[0].text, 'foo 1')
 
         # Third, save the model, which should fire the signal & index the
         # new data.
@@ -280,11 +280,11 @@ class SignalProcessorTestCase(WhooshTestCase):
         self.assertEqual(sqs.using('solr').count(), 5)
         self.assertEqual(sqs.using('solr').models(Foo).count(), 2)
         self.assertEqual(sqs.using('solr').models(Bar).count(), 3)
-        self.assertEqual(sqs.using('whoosh').count(), 2)
-        self.assertEqual(sqs.using('whoosh').models(Foo).count(), 2)
+        self.assertEqual(sqs.using('elasticsearch').count(), 2)
+        self.assertEqual(sqs.using('elasticsearch').models(Foo).count(), 2)
 
         self.assertEqual(sqs.using('solr').models(Foo).order_by('django_id')[0].text, 'A different body')
-        self.assertEqual(sqs.using('whoosh').models(Foo).order_by('django_id')[0].text, 'foo 1')
+        self.assertEqual(sqs.using('elasticsearch').models(Foo).order_by('django_id')[0].text, 'foo 1')
 
     def test_handle_delete(self):
         # Because the code here is pretty leaky (abstraction-wise), we'll test
@@ -297,11 +297,11 @@ class SignalProcessorTestCase(WhooshTestCase):
         self.assertEqual(sqs.using('solr').count(), 5)
         self.assertEqual(sqs.using('solr').models(Foo).count(), 2)
         self.assertEqual(sqs.using('solr').models(Bar).count(), 3)
-        self.assertEqual(sqs.using('whoosh').count(), 2)
-        self.assertEqual(sqs.using('whoosh').models(Foo).count(), 2)
+        self.assertEqual(sqs.using('elasticsearch').count(), 2)
+        self.assertEqual(sqs.using('elasticsearch').models(Foo).count(), 2)
 
         self.assertEqual(sqs.using('solr').models(Foo).order_by('django_id')[0].text, 'foo 1')
-        self.assertEqual(sqs.using('whoosh').models(Foo).order_by('django_id')[0].text, 'foo 1')
+        self.assertEqual(sqs.using('elasticsearch').models(Foo).order_by('django_id')[0].text, 'foo 1')
 
         # Third, delete the model, which should fire the signal & remove the
         # record from the index.
@@ -313,8 +313,8 @@ class SignalProcessorTestCase(WhooshTestCase):
         self.assertEqual(sqs.using('solr').count(), 4)
         self.assertEqual(sqs.using('solr').models(Foo).count(), 1)
         self.assertEqual(sqs.using('solr').models(Bar).count(), 3)
-        self.assertEqual(sqs.using('whoosh').count(), 2)
-        self.assertEqual(sqs.using('whoosh').models(Foo).count(), 2)
+        self.assertEqual(sqs.using('elasticsearch').count(), 2)
+        self.assertEqual(sqs.using('elasticsearch').models(Foo).count(), 2)
 
         self.assertEqual(sqs.using('solr').models(Foo).order_by('django_id')[0].text, 'foo 2')
-        self.assertEqual(sqs.using('whoosh').models(Foo).order_by('django_id')[0].text, 'foo 1')
+        self.assertEqual(sqs.using('elasticsearch').models(Foo).order_by('django_id')[0].text, 'foo 1')

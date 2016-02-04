@@ -16,7 +16,7 @@ class BaseIndex(indexes.SearchIndex):
 class FooIndex(BaseIndex, indexes.Indexable):
     def index_queryset(self, using=None):
         qs = super(FooIndex, self).index_queryset(using=using)
-        if using == "filtered_whoosh":
+        if using == "filtered_elasticsearch":
             qs = qs.filter(body__contains="1")
         return qs
 

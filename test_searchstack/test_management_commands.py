@@ -52,7 +52,7 @@ class CoreManagementCommandsTestCase(TestCase):
         for k in settings.SEARCHSTACK_CONNECTIONS:
             self.assertTrue(call(k) in m2.call_args_list)
         m1.assert_any_call("core", "default")
-        m1.assert_any_call("core", "whoosh")
+        m1.assert_any_call("core", "elasticsearch")
 
     @patch("searchstack.loading.ConnectionHandler.__getitem__")
     @patch("searchstack.management.commands.update_index.Command.update_backend")
