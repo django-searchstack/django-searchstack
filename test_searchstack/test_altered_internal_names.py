@@ -10,8 +10,8 @@ from searchstack.utils.loading import UnifiedIndex
 
 
 class MockModelSearchIndex(indexes.SearchIndex, indexes.Indexable):
-    text = indexes.CharField(model_attr='foo', document=True)
-    name = indexes.CharField(model_attr='author')
+    text = indexes.TextField(model_attr='foo', document=True)
+    name = indexes.TextField(model_attr='author')
     pub_date = indexes.DateField(model_attr='pub_date')
 
     def get_model(self):

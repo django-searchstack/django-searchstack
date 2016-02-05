@@ -429,7 +429,7 @@ class SolrSearchBackend(BaseSearchBackend):
         for field_name, field_class in fields.items():
             field_data = {
                 'field_name': field_class.index_fieldname,
-                'type': 'text_en',
+                'type': field_class.field_type,
                 'indexed': 'true',
                 'stored': 'true',
                 'multi_valued': 'false',
@@ -438,23 +438,15 @@ class SolrSearchBackend(BaseSearchBackend):
             if field_class.document is True:
                 content_field_name = field_class.index_fieldname
 
-            # DRL_FIXME: Perhaps move to something where, if none of these
-            #            checks succeed, call a custom method on the form that
-            #            returns, per-backend, the right type of storage?
-            if field_class.field_type in ['date', 'datetime']:
+            # now override type for cases where Solr schema name differs from internal type name
+            if field_class.field_type == 'datetime':
                 field_data['type'] = 'date'
             elif field_class.field_type == 'integer':
                 field_data['type'] = 'long'
-            elif field_class.field_type == 'float':
-                field_data['type'] = 'float'
-            elif field_class.field_type == 'boolean':
-                field_data['type'] = 'boolean'
-            elif field_class.field_type == 'ngram':
-                field_data['type'] = 'ngram'
-            elif field_class.field_type == 'edge_ngram':
-                field_data['type'] = 'edge_ngram'
-            elif field_class.field_type == 'location':
-                field_data['type'] = 'location'
+            elif field_class.field_type == 'decimal':
+                field_data['type'] = 'string'
+            elif field_class.field_type == 'text':
+                field_data['type'] = 'text_en'
 
             if field_class.is_multivalued:
                 field_data['multi_valued'] = 'true'

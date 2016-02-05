@@ -7,7 +7,7 @@ from .models import Bar, Foo
 
 # To test additional ignores...
 class BaseIndex(indexes.SearchIndex):
-    text = indexes.CharField(document=True, model_attr='body')
+    text = indexes.TextField(document=True, model_attr='body')
 
     def get_model(self):
         return Foo
@@ -25,7 +25,7 @@ class FooIndex(BaseIndex, indexes.Indexable):
 
 
 class BarIndex(SearchIndex, Indexable):
-    text = indexes.CharField(document=True)
+    text = indexes.TextField(document=True)
 
     def get_model(self):
         return Bar

@@ -41,8 +41,8 @@ def clear_solr_index():
 
 
 class SolrMockSearchIndex(indexes.SearchIndex, indexes.Indexable):
-    text = indexes.CharField(document=True, use_template=True)
-    name = indexes.CharField(model_attr='author', faceted=True)
+    text = indexes.TextField(document=True, use_template=True)
+    name = indexes.TextField(model_attr='author', faceted=True)
     pub_date = indexes.DateField(model_attr='pub_date')
 
     def get_model(self):
@@ -58,8 +58,8 @@ class SolrMockSearchIndexWithSkipDocument(SolrMockSearchIndex):
 
 
 class SolrMockOverriddenFieldNameSearchIndex(indexes.SearchIndex, indexes.Indexable):
-    text = indexes.CharField(document=True, use_template=True)
-    name = indexes.CharField(model_attr='author', faceted=True, index_fieldname='name_s')
+    text = indexes.TextField(document=True, use_template=True)
+    name = indexes.TextField(model_attr='author', faceted=True, index_fieldname='name_s')
     pub_date = indexes.DateField(model_attr='pub_date', index_fieldname='pub_date_dt')
     today = indexes.IntegerField(index_fieldname='today_i')
 
@@ -71,8 +71,8 @@ class SolrMockOverriddenFieldNameSearchIndex(indexes.SearchIndex, indexes.Indexa
 
 
 class SolrMaintainTypeMockSearchIndex(indexes.SearchIndex, indexes.Indexable):
-    text = indexes.CharField(document=True, use_template=True)
-    month = indexes.CharField(indexed=False)
+    text = indexes.TextField(document=True, use_template=True)
+    month = indexes.TextField(indexed=False)
     pub_date = indexes.DateField(model_attr='pub_date')
 
     def prepare_month(self, obj):
@@ -83,8 +83,8 @@ class SolrMaintainTypeMockSearchIndex(indexes.SearchIndex, indexes.Indexable):
 
 
 class SolrMockModelSearchIndex(indexes.SearchIndex, indexes.Indexable):
-    text = indexes.CharField(model_attr='foo', document=True)
-    name = indexes.CharField(model_attr='author')
+    text = indexes.TextField(model_attr='foo', document=True)
+    name = indexes.TextField(model_attr='author')
     pub_date = indexes.DateField(model_attr='pub_date')
 
     def get_model(self):
@@ -92,8 +92,8 @@ class SolrMockModelSearchIndex(indexes.SearchIndex, indexes.Indexable):
 
 
 class SolrAnotherMockModelSearchIndex(indexes.SearchIndex, indexes.Indexable):
-    text = indexes.CharField(document=True)
-    name = indexes.CharField(model_attr='author')
+    text = indexes.TextField(document=True)
+    name = indexes.TextField(model_attr='author')
     pub_date = indexes.DateField(model_attr='pub_date')
 
     def get_model(self):
@@ -104,12 +104,12 @@ class SolrAnotherMockModelSearchIndex(indexes.SearchIndex, indexes.Indexable):
 
 
 class SolrBoostMockSearchIndex(indexes.SearchIndex, indexes.Indexable):
-    text = indexes.CharField(
+    text = indexes.TextField(
         document=True, use_template=True,
         template_name='search/indexes/core/mockmodel_template.txt'
     )
-    author = indexes.CharField(model_attr='author', weight=2.0)
-    editor = indexes.CharField(model_attr='editor')
+    author = indexes.TextField(model_attr='author', weight=2.0)
+    editor = indexes.TextField(model_attr='editor')
     pub_date = indexes.DateField(model_attr='pub_date')
 
     def get_model(self):
@@ -117,8 +117,8 @@ class SolrBoostMockSearchIndex(indexes.SearchIndex, indexes.Indexable):
 
 
 class SolrRoundTripSearchIndex(indexes.SearchIndex, indexes.Indexable):
-    text = indexes.CharField(document=True, default='')
-    name = indexes.CharField()
+    text = indexes.TextField(document=True, default='')
+    name = indexes.TextField()
     is_active = indexes.BooleanField()
     post_count = indexes.IntegerField()
     average_rating = indexes.FloatField()
@@ -149,8 +149,8 @@ class SolrRoundTripSearchIndex(indexes.SearchIndex, indexes.Indexable):
 
 
 class SolrComplexFacetsMockSearchIndex(indexes.SearchIndex, indexes.Indexable):
-    text = indexes.CharField(document=True, default='')
-    name = indexes.CharField(faceted=True)
+    text = indexes.TextField(document=True, default='')
+    name = indexes.TextField(faceted=True)
     is_active = indexes.BooleanField(faceted=True)
     post_count = indexes.IntegerField()
     post_count_i = indexes.FacetIntegerField(facet_for='post_count')
@@ -164,8 +164,8 @@ class SolrComplexFacetsMockSearchIndex(indexes.SearchIndex, indexes.Indexable):
 
 
 class SolrAutocompleteMockModelSearchIndex(indexes.SearchIndex, indexes.Indexable):
-    text = indexes.CharField(model_attr='foo', document=True)
-    name = indexes.CharField(model_attr='author')
+    text = indexes.TextField(model_attr='foo', document=True)
+    name = indexes.TextField(model_attr='author')
     pub_date = indexes.DateField(model_attr='pub_date')
     text_auto = indexes.EdgeNgramField(model_attr='foo')
     name_auto = indexes.EdgeNgramField(model_attr='author')
@@ -175,7 +175,7 @@ class SolrAutocompleteMockModelSearchIndex(indexes.SearchIndex, indexes.Indexabl
 
 
 class SolrSpatialSearchIndex(indexes.SearchIndex, indexes.Indexable):
-    text = indexes.CharField(model_attr='name', document=True)
+    text = indexes.TextField(model_attr='name', document=True)
     location = indexes.LocationField()
 
     def prepare_location(self, obj):
@@ -186,7 +186,7 @@ class SolrSpatialSearchIndex(indexes.SearchIndex, indexes.Indexable):
 
 
 class SolrQuotingMockSearchIndex(indexes.SearchIndex, indexes.Indexable):
-    text = indexes.CharField(document=True, use_template=True)
+    text = indexes.TextField(document=True, use_template=True)
 
     def get_model(self):
         return MockModel
@@ -1317,7 +1317,7 @@ class LiveSolrRoundTripTestCase(TestCase):
         self.assertEqual(result.is_active, True)
         self.assertEqual(result.post_count, 25)
         self.assertEqual(result.average_rating, 3.6)
-        self.assertEqual(result.price, u'24.99')
+        self.assertEqual(result.price, Decimal('24.99'))
         self.assertEqual(result.pub_date, datetime.date(2009, 11, 21))
         self.assertEqual(result.created, datetime.datetime(2009, 11, 21, 21, 31, 00))
         self.assertEqual(result.tags, ['staff', 'outdoor', 'activist', 'scientist'])

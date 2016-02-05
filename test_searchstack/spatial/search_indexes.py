@@ -5,9 +5,9 @@ from .models import Checkin
 
 
 class CheckinSearchIndex(indexes.SearchIndex, indexes.Indexable):
-    text = indexes.CharField(document=True)
+    text = indexes.TextField(document=True)
     username = indexes.CharField(model_attr='username')
-    comment = indexes.CharField(model_attr='comment')
+    comment = indexes.TextField(model_attr='comment')
     # Again, if you were using GeoDjango, this could be just:
     #   location = indexes.LocationField(model_attr='location')
     location = indexes.LocationField(model_attr='get_location')

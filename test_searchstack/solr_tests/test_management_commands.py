@@ -16,7 +16,7 @@ from ..core.models import MockModel, MockTag
 
 
 class SolrMockSearchIndex(indexes.SearchIndex, indexes.Indexable):
-    text = indexes.CharField(document=True, use_template=True)
+    text = indexes.TextField(document=True, use_template=True)
     name = indexes.CharField(model_attr='author', faceted=True)
     pub_date = indexes.DateField(model_attr='pub_date')
 
@@ -28,7 +28,7 @@ class SolrMockSearchIndex(indexes.SearchIndex, indexes.Indexable):
 
 
 class SolrMockTagSearchIndex(indexes.SearchIndex, indexes.Indexable):
-    text = indexes.CharField(document=True, model_attr='name')
+    text = indexes.TextField(document=True, model_attr='name')
 
     def get_model(self):
         return MockTag

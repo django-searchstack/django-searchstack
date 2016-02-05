@@ -657,7 +657,7 @@ class ElasticsearchSearchBackend(BaseSearchBackend):
                 content_field_name = field_class.index_fieldname
 
             # Do this last to override `text` fields.
-            if field_mapping['type'] == 'string':
+            if field_class.field_type == 'text':
                 if field_class.indexed is False or hasattr(field_class, 'facet_for'):
                     field_mapping['index'] = 'not_analyzed'
                     del field_mapping['analyzer']
@@ -729,8 +729,9 @@ class ElasticsearchSearchBackend(BaseSearchBackend):
 # DRL_FIXME: Perhaps move to something where, if none of these
 #            match, call a custom method on the form that returns, per-backend,
 #            the right type of storage?
-DEFAULT_FIELD_MAPPING = {'type': 'string', 'analyzer': 'snowball'}
+DEFAULT_FIELD_MAPPING = {'type': 'string', 'index': 'not_analyzed'}
 FIELD_MAPPINGS = {
+    'text':       {'type': 'string', 'analyzer': 'snowball'},
     'edge_ngram': {'type': 'string', 'analyzer': 'edgengram_analyzer'},
     'ngram':      {'type': 'string', 'analyzer': 'ngram_analyzer'},
     'date':       {'type': 'date'},

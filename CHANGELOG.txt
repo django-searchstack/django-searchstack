@@ -1,5 +1,9 @@
 === 1.0.0pre1 (Unreleased) ===
 
+- Fix DecimalField to convert search results to actual Decimal instance (not string as it used to)
+- Split CharField into CharField (non-analyzed string; becomes functionally equivalent to FacetCharField in old impl) and
+  TextField (analyzed string; equivalend to CharField in old impl). This is a breaking change but necessary since 
+  all FacetField* classes will be removed eventually.
 - Replace default value for field default to None since field value becomes None if default is not provided
 - Remove simple_backend (which was useless) and whoosh_backend (which could be reborn as a third party project)
 - Rename top level module and other 'haystack*' names to 'searchstack'
