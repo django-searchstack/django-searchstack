@@ -160,6 +160,10 @@ class CharField(SearchField):
         return six.text_type(value)
 
 
+class TextField(CharField):
+    field_type = 'text'
+
+
 class LocationField(SearchField):
     field_type = 'location'
 
@@ -251,7 +255,7 @@ class FloatField(SearchField):
 
 
 class DecimalField(SearchField):
-    field_type = 'string'
+    field_type = 'decimal'
 
     def __init__(self, **kwargs):
         if kwargs.get('facet_class') is None:
@@ -260,13 +264,24 @@ class DecimalField(SearchField):
         super(DecimalField, self).__init__(**kwargs)
 
     def prepare(self, obj):
-        return self.convert(super(DecimalField, self).prepare(obj))
+        value = super(DecimalField, self).prepare(obj)
 
-    def convert(self, value):
         if value is None:
             return None
 
         return six.text_type(value)
+
+    def convert(self, value):
+        from decimal import Decimal
+
+        if value is None:
+            return None
+
+        # conversion to string before converting to Decimal is necessary because their might be cases
+        # when we get float as value (e.g. strings that look like floats returned in elasticsearch json
+        # output get converted to python float). This is the only way to not get float's internal
+        # representation as input.
+        return Decimal(six.text_type(value))
 
 
 class BooleanField(SearchField):
@@ -339,7 +354,7 @@ class DateTimeField(SearchField):
 
 
 class MultiValueField(SearchField):
-    field_type = 'string'
+    field_type = 'text'
 
     def __init__(self, **kwargs):
         if kwargs.get('facet_class') is None:
