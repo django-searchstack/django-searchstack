@@ -1,4 +1,6 @@
 # encoding: utf-8
+from __future__ import unicode_literals
+
 from searchstack import indexes
 from searchstack.indexes import Indexable, SearchIndex
 
@@ -31,4 +33,4 @@ class BarIndex(SearchIndex, Indexable):
         return Bar
 
     def prepare_text(self, obj):
-        return u"%s\n%s" % (obj.author, obj.content)
+        return "%s\n%s" % (obj.author, obj.content)

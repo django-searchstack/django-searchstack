@@ -1,4 +1,6 @@
 # encoding: utf-8
+from __future__ import unicode_literals
+
 import importlib
 
 from django import template
@@ -87,15 +89,15 @@ def highlight(parser, token):
     tag_name = bits[0]
 
     if not len(bits) % 2 == 0:
-        raise template.TemplateSyntaxError(u"'%s' tag requires valid pairings arguments." % tag_name)
+        raise template.TemplateSyntaxError("'%s' tag requires valid pairings arguments." % tag_name)
 
     text_block = bits[1]
 
     if len(bits) < 4:
-        raise template.TemplateSyntaxError(u"'%s' tag requires an object and a query provided by 'with'." % tag_name)
+        raise template.TemplateSyntaxError("'%s' tag requires an object and a query provided by 'with'." % tag_name)
 
     if bits[2] != 'with':
-        raise template.TemplateSyntaxError(u"'%s' tag's second argument should be 'with'." % tag_name)
+        raise template.TemplateSyntaxError("'%s' tag's second argument should be 'with'." % tag_name)
 
     query = bits[3]
 

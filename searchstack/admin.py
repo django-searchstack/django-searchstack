@@ -1,4 +1,6 @@
 # encoding: utf-8
+from __future__ import unicode_literals
+
 from django import template
 from django.contrib.admin.options import ModelAdmin, csrf_protect_m
 from django.contrib.admin.views.main import SEARCH_VAR, ChangeList

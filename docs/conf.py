@@ -40,8 +40,8 @@ source_suffix = '.rst'
 master_doc = 'toc'
 
 # General information about the project.
-project = u'Haystack'
-copyright = u'2009-2015, Daniel Lindsley'
+project = 'Haystack'
+copyright = '2009-2015, Daniel Lindsley'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -185,8 +185,8 @@ htmlhelp_basename = 'Haystackdoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'Haystack.tex', u'Haystack Documentation',
-   u'Daniel Lindsley', 'manual'),
+  ('index', 'Haystack.tex', 'Haystack Documentation',
+   'Daniel Lindsley', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of

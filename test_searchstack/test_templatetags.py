@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
 from django.core.exceptions import ImproperlyConfigured
 from django.template import Context, Template
 from django.test import TestCase, override_settings
@@ -55,25 +57,25 @@ the attribute of the object to populate that field with.
             'entry': self.sample_entry,
             'query': 'index',
         }
-        self.assertEqual(self.render(template, context), u'...<span class="highlighted">index</span>ing behavior for your model you can specify your own Search<span class="highlighted">Index</span> class.\nThis is useful for ensuring that future-dated or non-live content is not <span class="highlighted">index</span>ed\nand searchable.\n\nEvery custom Search<span class="highlighted">Index</span> ...')
+        self.assertEqual(self.render(template, context), '...<span class="highlighted">index</span>ing behavior for your model you can specify your own Search<span class="highlighted">Index</span> class.\nThis is useful for ensuring that future-dated or non-live content is not <span class="highlighted">index</span>ed\nand searchable.\n\nEvery custom Search<span class="highlighted">Index</span> ...')
 
         template = """{% load highlight %}{% highlight entry with query html_tag "div" css_class "foo" max_length 100 %}"""
         context = {
             'entry': self.sample_entry,
             'query': 'field',
         }
-        self.assertEqual(self.render(template, context), u'...<div class="foo">field</div> with\ndocument=True. This is the primary <div class="foo">field</div> that will get passed to the backend\nfor indexing...')
+        self.assertEqual(self.render(template, context), '...<div class="foo">field</div> with\ndocument=True. This is the primary <div class="foo">field</div> that will get passed to the backend\nfor indexing...')
 
         template = """{% load highlight %}{% highlight entry with query html_tag "div" css_class "foo" max_length 100 %}"""
         context = {
             'entry': self.sample_entry,
             'query': 'Haystack',
         }
-        self.assertEqual(self.render(template, context), u'...<div class="foo">Haystack</div> is very similar to registering models and\nModelAdmin classes in the Django admin site. If y...')
+        self.assertEqual(self.render(template, context), '...<div class="foo">Haystack</div> is very similar to registering models and\nModelAdmin classes in the Django admin site. If y...')
 
         template = """{% load highlight %}{% highlight "xxxxxxxxxxxxx foo bbxxxxx foo" with "foo" max_length 5 html_tag "span" %}"""
         context = {}
-        self.assertEqual(self.render(template, context), u'...<span class="highlighted">foo</span> b...')
+        self.assertEqual(self.render(template, context), '...<span class="highlighted">foo</span> b...')
 
     @override_settings(SEARCHSTACK_CUSTOM_HIGHLIGHTER='not.here.FooHighlighter')
     def test_custom1(self):
@@ -91,4 +93,4 @@ the attribute of the object to populate that field with.
             'entry': self.sample_entry,
             'query': 'index',
         }
-        self.assertEqual(self.render(template, context), u'Bork!ing behavior for your model you can specify your own SearchIndex class.\nThis is useful for ensuring that future-dated or non-live content is not Bork!ed\nand searchable.\n\nEvery custom SearchIndex ')
+        self.assertEqual(self.render(template, context), 'Bork!ing behavior for your model you can specify your own SearchIndex class.\nThis is useful for ensuring that future-dated or non-live content is not Bork!ed\nand searchable.\n\nEvery custom SearchIndex ')

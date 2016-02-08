@@ -1,4 +1,6 @@
 # encoding: utf-8
+from __future__ import unicode_literals
+
 import logging
 import os
 from datetime import timedelta
@@ -189,7 +191,7 @@ class Command(BaseCommand):
             total = qs.count()
 
             if self.verbosity >= 1:
-                self.stdout.write(u"Indexing %d %s" % (total, force_text(model._meta.verbose_name_plural)))
+                self.stdout.write("Indexing %d %s" % (total, force_text(model._meta.verbose_name_plural)))
 
             batch_size = self.batchsize or backend.batch_size
 

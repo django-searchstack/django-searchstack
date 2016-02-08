@@ -1,7 +1,9 @@
 # encoding: utf-8
-from regular_app.models import Dog
+from __future__ import unicode_literals
 
 from searchstack import indexes
+
+from .models import Dog
 
 
 # More typical usage involves creating a subclassed `SearchIndex`. This will

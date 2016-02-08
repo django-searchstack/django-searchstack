@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
 import datetime
 
 from django.test import TestCase
@@ -390,7 +392,7 @@ class SearchQuerySetTestCase(TestCase):
         self.assertEqual(len(connections['default'].queries), 0)
 
         check = [result.pk for result in results._manual_iter()]
-        self.assertEqual(check, [u'1', u'2', u'3', u'4', u'5', u'6', u'7', u'8', u'9', u'10', u'11', u'12', u'13', u'14', u'15', u'16', u'17', u'18', u'19', u'20', u'21', u'22', u'23'])
+        self.assertEqual(check, ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'])
 
         self.assertEqual(len(connections['default'].queries), 3)
 
@@ -407,7 +409,7 @@ class SearchQuerySetTestCase(TestCase):
 
         results = self.msqs.all()
         loaded = [result.pk for result in results._manual_iter()]
-        self.assertEqual(loaded, [u'sometext', u'1234'])
+        self.assertEqual(loaded, ['sometext', '1234'])
         self.assertEqual(len(connections['default'].queries), 1)
 
         connections['default']._index = old_ui

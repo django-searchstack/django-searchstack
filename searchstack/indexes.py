@@ -1,4 +1,6 @@
 # encoding: utf-8
+from __future__ import unicode_literals
+
 import copy
 import threading
 import warnings
@@ -42,7 +44,7 @@ class DeclarativeMetaclass(type):
         for field_name, obj in attrs.items():
             # Only need to check the FacetFields.
             if hasattr(obj, 'facet_for'):
-                if not obj.facet_for in facet_fields:
+                if obj.facet_for not in facet_fields:
                     facet_fields[obj.facet_for] = []
 
                 facet_fields[obj.facet_for].append(field_name)
@@ -57,10 +59,10 @@ class DeclarativeMetaclass(type):
 
                 # Only check non-faceted fields for the following info.
                 if not hasattr(field, 'facet_for'):
-                    if field.faceted == True:
+                    if field.faceted is True:
                         # If no other field is claiming this field as
                         # ``facet_for``, create a shadow ``FacetField``.
-                        if not field_name in facet_fields:
+                        if field_name not in facet_fields:
                             shadow_facet_name = get_facet_field_name(field_name)
                             shadow_facet_field = field.facet_class(facet_for=field_name)
                             shadow_facet_field.set_instance_name(shadow_facet_name)
@@ -69,7 +71,7 @@ class DeclarativeMetaclass(type):
         attrs['fields'].update(built_fields)
 
         # Assigning default 'objects' query manager if it does not already exist
-        if not 'objects' in attrs:
+        if 'objects' not in attrs:
             try:
                 attrs['objects'] = SearchIndexManager(attrs['Meta'].index_label)
             except (KeyError, AttributeError):
@@ -106,7 +108,7 @@ class SearchIndex(with_metaclass(DeclarativeMetaclass, threading.local)):
 
         self.field_map = dict()
         for field_name, field in self.fields.items():
-            #form field map
+            # form field map
             self.field_map[field.index_fieldname] = field_name
             if field.document is True:
                 content_fields.append(field_name)

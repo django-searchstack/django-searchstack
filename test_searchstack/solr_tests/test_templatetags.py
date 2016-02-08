@@ -1,4 +1,6 @@
 # encoding: utf-8
+from __future__ import unicode_literals
+
 from django.template import Context, Template
 from django.test import TestCase
 from mock import call, patch

@@ -1,4 +1,6 @@
 # encoding: utf-8
+from __future__ import unicode_literals
+
 from django.test import TestCase
 from .core.models import AnotherMockModel, MockModel
 from .utils import check_solr
@@ -44,10 +46,10 @@ class AlteredInternalNamesTestCase(TestCase):
 
         sq.add_filter(SQ(content='hello'))
         sq.add_model(MockModel)
-        self.assertEqual(sq.build_query(), u'(hello)')
+        self.assertEqual(sq.build_query(), '(hello)')
 
         sq.add_model(AnotherMockModel)
-        self.assertEqual(sq.build_query(), u'(hello)')
+        self.assertEqual(sq.build_query(), '(hello)')
 
     def test_solr_schema(self):
         command = Command()

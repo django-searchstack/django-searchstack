@@ -1,8 +1,10 @@
 # encoding: utf-8
+from __future__ import unicode_literals
+
 from django import template
-from ..utils.app_loading import haystack_get_model
 
 from ..query import SearchQuerySet
+from ..utils.app_loading import haystack_get_model
 
 register = template.Library()
 
@@ -71,12 +73,12 @@ def more_like_this(parser, token):
     bits = token.split_contents()
 
     if not len(bits) in (4, 6, 8):
-        raise template.TemplateSyntaxError(u"'%s' tag requires either 3, 5 or 7 arguments." % bits[0])
+        raise template.TemplateSyntaxError("'%s' tag requires either 3, 5 or 7 arguments." % bits[0])
 
     model = bits[1]
 
     if bits[2] != 'as':
-        raise template.TemplateSyntaxError(u"'%s' tag's second argument should be 'as'." % bits[0])
+        raise template.TemplateSyntaxError("'%s' tag's second argument should be 'as'." % bits[0])
 
     varname = bits[3]
     limit = None
@@ -84,7 +86,7 @@ def more_like_this(parser, token):
 
     if len(bits) == 6:
         if bits[4] != 'limit' and bits[4] != 'for':
-            raise template.TemplateSyntaxError(u"'%s' tag's fourth argument should be either 'limit' or 'for'." % bits[0])
+            raise template.TemplateSyntaxError("'%s' tag's fourth argument should be either 'limit' or 'for'." % bits[0])
 
         if bits[4] == 'limit':
             limit = bits[5]
@@ -93,12 +95,12 @@ def more_like_this(parser, token):
 
     if len(bits) == 8:
         if bits[4] != 'for':
-            raise template.TemplateSyntaxError(u"'%s' tag's fourth argument should be 'for'." % bits[0])
+            raise template.TemplateSyntaxError("'%s' tag's fourth argument should be 'for'." % bits[0])
 
         for_types = bits[5]
 
         if bits[6] != 'limit':
-            raise template.TemplateSyntaxError(u"'%s' tag's sixth argument should be 'limit'." % bits[0])
+            raise template.TemplateSyntaxError("'%s' tag's sixth argument should be 'limit'." % bits[0])
 
         limit = bits[7]
 

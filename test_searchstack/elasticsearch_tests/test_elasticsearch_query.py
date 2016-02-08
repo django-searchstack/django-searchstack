@@ -1,4 +1,6 @@
 # encoding: utf-8
+from __future__ import unicode_literals
+
 import datetime
 
 import elasticsearch
@@ -7,7 +9,7 @@ from django.test import TestCase
 from searchstack import connections
 from searchstack.inputs import Exact
 from searchstack.models import SearchResult
-from searchstack.query import SearchQuerySet, SQ
+from searchstack.query import SQ, SearchQuerySet
 from searchstack.utils.geo import D, Point
 
 from ..core.models import AnotherMockModel, MockModel
@@ -58,14 +60,14 @@ class ElasticsearchSearchQueryTestCase(TestCase):
         self.sq.add_filter(SQ(content='why'))
         self.sq.add_filter(SQ(content='hello'), use_or=True)
         self.sq.add_filter(~SQ(content='world'))
-        self.assertEqual(self.sq.build_query(), u'(((why) OR (hello)) AND NOT ((world)))')
+        self.assertEqual(self.sq.build_query(), '(((why) OR (hello)) AND NOT ((world)))')
 
     def test_build_query_phrase(self):
         self.sq.add_filter(SQ(content='hello world'))
         self.assertEqual(self.sq.build_query(), '(hello AND world)')
 
         self.sq.add_filter(SQ(content__exact='hello world'))
-        self.assertEqual(self.sq.build_query(), u'((hello AND world) AND ("hello world"))')
+        self.assertEqual(self.sq.build_query(), '((hello AND world) AND ("hello world"))')
 
     def test_build_query_boost(self):
         self.sq.add_filter(SQ(content='hello'))
@@ -80,7 +82,7 @@ class ElasticsearchSearchQueryTestCase(TestCase):
         self.sq.add_filter(SQ(title__gte='B'))
         self.sq.add_filter(SQ(id__in=[1, 2, 3]))
         self.sq.add_filter(SQ(rating__range=[3, 5]))
-        self.assertEqual(self.sq.build_query(), u'((why) AND pub_date:([* TO "2009-02-10 01:59:00"]) AND author:({"daniel" TO *}) AND created:({* TO "2009-02-12 12:13:00"}) AND title:(["B" TO *]) AND id:("1" OR "2" OR "3") AND rating:(["3" TO "5"]))')
+        self.assertEqual(self.sq.build_query(), '((why) AND pub_date:([* TO "2009-02-10 01:59:00"]) AND author:({"daniel" TO *}) AND created:({* TO "2009-02-12 12:13:00"}) AND title:(["B" TO *]) AND id:("1" OR "2" OR "3") AND rating:(["3" TO "5"]))')
 
     def test_build_query_multiple_filter_types_with_datetimes(self):
         self.sq.add_filter(SQ(content='why'))
@@ -90,17 +92,17 @@ class ElasticsearchSearchQueryTestCase(TestCase):
         self.sq.add_filter(SQ(title__gte='B'))
         self.sq.add_filter(SQ(id__in=[1, 2, 3]))
         self.sq.add_filter(SQ(rating__range=[3, 5]))
-        self.assertEqual(self.sq.build_query(), u'((why) AND pub_date:([* TO "2009-02-10T01:59:00"]) AND author:({"daniel" TO *}) AND created:({* TO "2009-02-12T12:13:00"}) AND title:(["B" TO *]) AND id:("1" OR "2" OR "3") AND rating:(["3" TO "5"]))')
+        self.assertEqual(self.sq.build_query(), '((why) AND pub_date:([* TO "2009-02-10T01:59:00"]) AND author:({"daniel" TO *}) AND created:({* TO "2009-02-12T12:13:00"}) AND title:(["B" TO *]) AND id:("1" OR "2" OR "3") AND rating:(["3" TO "5"]))')
 
     def test_build_query_in_filter_multiple_words(self):
         self.sq.add_filter(SQ(content='why'))
         self.sq.add_filter(SQ(title__in=["A Famous Paper", "An Infamous Article"]))
-        self.assertEqual(self.sq.build_query(), u'((why) AND title:("A Famous Paper" OR "An Infamous Article"))')
+        self.assertEqual(self.sq.build_query(), '((why) AND title:("A Famous Paper" OR "An Infamous Article"))')
 
     def test_build_query_in_filter_datetime(self):
         self.sq.add_filter(SQ(content='why'))
         self.sq.add_filter(SQ(pub_date__in=[datetime.datetime(2009, 7, 6, 1, 56, 21)]))
-        self.assertEqual(self.sq.build_query(), u'((why) AND pub_date:("2009-07-06T01:56:21"))')
+        self.assertEqual(self.sq.build_query(), '((why) AND pub_date:("2009-07-06T01:56:21"))')
 
     def test_build_query_in_with_set(self):
         self.sq.add_filter(SQ(content='why'))
@@ -112,12 +114,12 @@ class ElasticsearchSearchQueryTestCase(TestCase):
     def test_build_query_wildcard_filter_types(self):
         self.sq.add_filter(SQ(content='why'))
         self.sq.add_filter(SQ(title__startswith='haystack'))
-        self.assertEqual(self.sq.build_query(), u'((why) AND title:(haystack*))')
+        self.assertEqual(self.sq.build_query(), '((why) AND title:(haystack*))')
 
     def test_build_query_fuzzy_filter_types(self):
         self.sq.add_filter(SQ(content='why'))
         self.sq.add_filter(SQ(title__fuzzy='haystack'))
-        self.assertEqual(self.sq.build_query(), u'((why) AND title:(haystack~))')
+        self.assertEqual(self.sq.build_query(), '((why) AND title:(haystack~))')
 
     def test_clean(self):
         self.assertEqual(self.sq.clean('hello world'), 'hello world')
@@ -131,7 +133,7 @@ class ElasticsearchSearchQueryTestCase(TestCase):
         self.assertEqual(self.sq.build_query(), '(hello)')
 
         self.sq.add_model(AnotherMockModel)
-        self.assertEqual(self.sq.build_query(), u'(hello)')
+        self.assertEqual(self.sq.build_query(), '(hello)')
 
     def test_set_result_class(self):
         # Assert that we're defaulting to ``SearchResult``.
@@ -151,7 +153,7 @@ class ElasticsearchSearchQueryTestCase(TestCase):
     def test_in_filter_values_list(self):
         self.sq.add_filter(SQ(content='why'))
         self.sq.add_filter(SQ(title__in=MockModel.objects.values_list('id', flat=True)))
-        self.assertEqual(self.sq.build_query(), u'((why) AND title:("1" OR "2" OR "3"))')
+        self.assertEqual(self.sq.build_query(), '((why) AND title:("1" OR "2" OR "3"))')
 
     def test_narrow_sq(self):
         sqs = SearchQuerySet(using='elasticsearch').narrow(SQ(foo='moof'))

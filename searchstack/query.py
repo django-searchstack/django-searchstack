@@ -1,4 +1,6 @@
 # encoding: utf-8
+from __future__ import unicode_literals
+
 import operator
 import warnings
 
@@ -82,7 +84,7 @@ class SearchQuerySet(object):
         self.log = logging.getLogger('searchstack')
 
     def __repr__(self):
-        return u"<SearchQuerySet: query=%r, using=%r>" % (self.query, self._using)
+        return "<SearchQuerySet: query=%r, using=%r>" % (self.query, self._using)
 
     def __len__(self):
         if not self._result_count:

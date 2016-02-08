@@ -1,4 +1,6 @@
 # encoding: utf-8
+from __future__ import unicode_literals
+
 import re
 import warnings
 
@@ -18,7 +20,7 @@ class BaseInput(object):
         self.kwargs = kwargs
 
     def __repr__(self):
-        return u"<%s '%s'>" % (self.__class__.__name__, self.__unicode__().encode('utf8'))
+        return "<%s '%s'>" % (self.__class__.__name__, self.__unicode__().encode('utf8'))
 
     def __str__(self):
         return force_text(self.query_string)
@@ -69,7 +71,7 @@ class Exact(BaseInput):
         if self.kwargs.get('clean', False):
             # We need to clean each part of the exact match.
             exact_bits = [Clean(bit).prepare(query_obj) for bit in query_string.split(' ') if bit]
-            query_string = u' '.join(exact_bits)
+            query_string = ' '.join(exact_bits)
 
         return query_obj.build_exact_query(query_string)
 
@@ -105,7 +107,7 @@ class AutoQuery(BaseInput):
         for rough_token in self.exact_match_re.split(query_string):
             if not rough_token:
                 continue
-            elif not rough_token in exacts:
+            elif rough_token not in exacts:
                 # We have something that's not an exact match but may have more
                 # than on word in it.
                 tokens.extend(rough_token.split(' '))
@@ -123,7 +125,7 @@ class AutoQuery(BaseInput):
             else:
                 query_bits.append(Clean(token).prepare(query_obj))
 
-        return u' '.join(query_bits)
+        return ' '.join(query_bits)
 
 
 class AltParser(BaseInput):
@@ -141,7 +143,7 @@ class AltParser(BaseInput):
         self.kwargs = kwargs
 
     def __repr__(self):
-        return u"<%s '%s' '%s' '%s'>" % (self.__class__.__name__, self.parser_name, self.query_string, self.kwargs)
+        return "<%s '%s' '%s' '%s'>" % (self.__class__.__name__, self.parser_name, self.query_string, self.kwargs)
 
     def prepare(self, query_obj):
         if not hasattr(query_obj, 'build_alt_parser_query'):

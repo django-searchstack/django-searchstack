@@ -1,4 +1,6 @@
 # encoding: utf-8
+from __future__ import unicode_literals
+
 from django.test import TestCase
 from django.test.utils import override_settings
 from .core.models import MockModel
@@ -139,24 +141,24 @@ class HighlighterTestCase(TestCase):
 
     def test_highlight(self):
         highlighter = Highlighter('this test')
-        self.assertEqual(highlighter.highlight(self.document_1), u'<span class="highlighted">This</span> is a <span class="highlighted">test</span> of the highlightable words detection. <span class="highlighted">This</span> is only a <span class="highlighted">test</span>. Were <span class="highlighted">this</span> an actual emergency, your text would have exploded in mid-air.')
-        self.assertEqual(highlighter.highlight(self.document_2), u'The content of words in no particular order causes nothing to occur.')
-        self.assertEqual(highlighter.highlight(self.document_3), u'<span class="highlighted">This</span> is a <span class="highlighted">test</span> of the highlightable words detection. <span class="highlighted">This</span> is only a <span class="highlighted">test</span>. Were <span class="highlighted">this</span> an actual emergency, your text would have exploded in mid-air. The content of words in no particular order causes no...')
+        self.assertEqual(highlighter.highlight(self.document_1), '<span class="highlighted">This</span> is a <span class="highlighted">test</span> of the highlightable words detection. <span class="highlighted">This</span> is only a <span class="highlighted">test</span>. Were <span class="highlighted">this</span> an actual emergency, your text would have exploded in mid-air.')
+        self.assertEqual(highlighter.highlight(self.document_2), 'The content of words in no particular order causes nothing to occur.')
+        self.assertEqual(highlighter.highlight(self.document_3), '<span class="highlighted">This</span> is a <span class="highlighted">test</span> of the highlightable words detection. <span class="highlighted">This</span> is only a <span class="highlighted">test</span>. Were <span class="highlighted">this</span> an actual emergency, your text would have exploded in mid-air. The content of words in no particular order causes no...')
 
         highlighter = Highlighter('this test', html_tag='div', css_class=None)
-        self.assertEqual(highlighter.highlight(self.document_1), u'<div>This</div> is a <div>test</div> of the highlightable words detection. <div>This</div> is only a <div>test</div>. Were <div>this</div> an actual emergency, your text would have exploded in mid-air.')
-        self.assertEqual(highlighter.highlight(self.document_2), u'The content of words in no particular order causes nothing to occur.')
-        self.assertEqual(highlighter.highlight(self.document_3), u'<div>This</div> is a <div>test</div> of the highlightable words detection. <div>This</div> is only a <div>test</div>. Were <div>this</div> an actual emergency, your text would have exploded in mid-air. The content of words in no particular order causes no...')
+        self.assertEqual(highlighter.highlight(self.document_1), '<div>This</div> is a <div>test</div> of the highlightable words detection. <div>This</div> is only a <div>test</div>. Were <div>this</div> an actual emergency, your text would have exploded in mid-air.')
+        self.assertEqual(highlighter.highlight(self.document_2), 'The content of words in no particular order causes nothing to occur.')
+        self.assertEqual(highlighter.highlight(self.document_3), '<div>This</div> is a <div>test</div> of the highlightable words detection. <div>This</div> is only a <div>test</div>. Were <div>this</div> an actual emergency, your text would have exploded in mid-air. The content of words in no particular order causes no...')
 
         highlighter = Highlighter('content detection')
-        self.assertEqual(highlighter.highlight(self.document_1), u'...<span class="highlighted">detection</span>. This is only a test. Were this an actual emergency, your text would have exploded in mid-air.')
-        self.assertEqual(highlighter.highlight(self.document_2), u'...<span class="highlighted">content</span> of words in no particular order causes nothing to occur.')
-        self.assertEqual(highlighter.highlight(self.document_3), u'...<span class="highlighted">detection</span>. This is only a test. Were this an actual emergency, your text would have exploded in mid-air. The <span class="highlighted">content</span> of words in no particular order causes nothing to occur.')
+        self.assertEqual(highlighter.highlight(self.document_1), '...<span class="highlighted">detection</span>. This is only a test. Were this an actual emergency, your text would have exploded in mid-air.')
+        self.assertEqual(highlighter.highlight(self.document_2), '...<span class="highlighted">content</span> of words in no particular order causes nothing to occur.')
+        self.assertEqual(highlighter.highlight(self.document_3), '...<span class="highlighted">detection</span>. This is only a test. Were this an actual emergency, your text would have exploded in mid-air. The <span class="highlighted">content</span> of words in no particular order causes nothing to occur.')
 
         highlighter = Highlighter('content detection', max_length=100)
-        self.assertEqual(highlighter.highlight(self.document_1), u'...<span class="highlighted">detection</span>. This is only a test. Were this an actual emergency, your text would have exploded in mid-...')
-        self.assertEqual(highlighter.highlight(self.document_2), u'...<span class="highlighted">content</span> of words in no particular order causes nothing to occur.')
-        self.assertEqual(highlighter.highlight(self.document_3), u'This is a test of the highlightable words <span class="highlighted">detection</span>. This is only a test. Were this an actual emerge...')
+        self.assertEqual(highlighter.highlight(self.document_1), '...<span class="highlighted">detection</span>. This is only a test. Were this an actual emergency, your text would have exploded in mid-...')
+        self.assertEqual(highlighter.highlight(self.document_2), '...<span class="highlighted">content</span> of words in no particular order causes nothing to occur.')
+        self.assertEqual(highlighter.highlight(self.document_3), 'This is a test of the highlightable words <span class="highlighted">detection</span>. This is only a test. Were this an actual emerge...')
 
 
 class LoggingFacadeTestCase(TestCase):

@@ -1,4 +1,6 @@
 # encoding: utf-8
+from __future__ import unicode_literals
+
 from types import GeneratorType, ModuleType
 
 from django.core.urlresolvers import reverse

@@ -1,11 +1,12 @@
 # encoding: utf-8
+from __future__ import unicode_literals
+
 import sys
 
 from django.core.management.base import BaseCommand
 from django.utils import six
 
 from ... import connections
-
 
 # defined statically to be useable in rebuild_index
 options = {
@@ -70,3 +71,4 @@ class Command(BaseCommand):
 
         if verbosity >= 1:
             self.stdout.write("All documents removed.")
+

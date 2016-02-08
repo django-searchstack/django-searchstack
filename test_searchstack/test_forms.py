@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
 from django.test import TestCase
 from .core.models import MockModel
 from .test_views import BasicAnotherMockModelSearchIndex, BasicMockModelSearchIndex
@@ -72,7 +74,7 @@ class ModelSearchFormTestCase(TestCase):
             'models': ['core.mockmodel', 'core.anothermockmodel'],
         }, searchqueryset=self.sqs)
 
-        self.assertEqual(msf.fields['models'].choices, [('core.anothermockmodel', u'Another mock models'), ('core.mockmodel', u'Mock models')])
+        self.assertEqual(msf.fields['models'].choices, [('core.anothermockmodel', 'Another mock models'), ('core.mockmodel', 'Mock models')])
         self.assertEqual(msf.errors, {})
         self.assertEqual(msf.is_valid(), True)
 
@@ -81,13 +83,13 @@ class ModelSearchFormTestCase(TestCase):
 
     def test_model_choices(self):
         self.assertEqual(len(model_choices()), 2)
-        self.assertEqual([option[1] for option in model_choices()], [u'Another mock models', u'Mock models'])
+        self.assertEqual([option[1] for option in model_choices()], ['Another mock models', 'Mock models'])
 
     def test_model_choices_unicode(self):
         stowed_verbose_name_plural = MockModel._meta.verbose_name_plural
-        MockModel._meta.verbose_name_plural = u'☃'
+        MockModel._meta.verbose_name_plural = '☃'
         self.assertEqual(len(model_choices()), 2)
-        self.assertEqual([option[1] for option in model_choices()], [u'Another mock models', u'☃'])
+        self.assertEqual([option[1] for option in model_choices()], ['Another mock models', '☃'])
         MockModel._meta.verbose_name_plural = stowed_verbose_name_plural
 
 
@@ -146,8 +148,8 @@ class FacetedSearchFormTestCase(TestCase):
 
         sf = FacetedSearchForm({'q': 'test'}, selected_facets=['author:daniel'], searchqueryset=self.sqs)
         sqs = sf.search()
-        self.assertEqual(sqs.query.narrow_queries, set([u'author:"daniel"']))
+        self.assertEqual(sqs.query.narrow_queries, set(['author:"daniel"']))
 
         sf = FacetedSearchForm({'q': 'test'}, selected_facets=['author:daniel', 'author:chris'], searchqueryset=self.sqs)
         sqs = sf.search()
-        self.assertEqual(sqs.query.narrow_queries, set([u'author:"daniel"', u'author:"chris"']))
+        self.assertEqual(sqs.query.narrow_queries, set(['author:"daniel"', 'author:"chris"']))

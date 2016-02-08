@@ -1,4 +1,6 @@
 # encoding: utf-8
+from __future__ import unicode_literals
+
 import datetime
 from decimal import Decimal
 
@@ -21,7 +23,7 @@ class CharFieldTestCase(TestCase):
         mock.user = 'daniel'
         author = CharField(model_attr='user')
 
-        self.assertEqual(author.prepare(mock), u'daniel')
+        self.assertEqual(author.prepare(mock), 'daniel')
 
         # Do a lookup through the relation.
         mock_tag = MockTag.objects.create(name='primary')
@@ -30,13 +32,13 @@ class CharFieldTestCase(TestCase):
         mock.tag = mock_tag
         tag_name = CharField(model_attr='tag__name')
 
-        self.assertEqual(tag_name.prepare(mock), u'primary')
+        self.assertEqual(tag_name.prepare(mock), 'primary')
 
         # Use the default.
         mock = MockModel()
         author = CharField(model_attr='author', default='')
 
-        self.assertEqual(author.prepare(mock), u'')
+        self.assertEqual(author.prepare(mock), '')
 
         # Simulate failed lookups.
         mock_tag = MockTag.objects.create(name='primary')
@@ -80,7 +82,7 @@ class NgramFieldTestCase(TestCase):
         mock.user = 'daniel'
         author = NgramField(model_attr='user')
 
-        self.assertEqual(author.prepare(mock), u'daniel')
+        self.assertEqual(author.prepare(mock), 'daniel')
 
         # Do a lookup through the relation.
         mock_tag = MockTag.objects.create(name='primary')
@@ -89,13 +91,13 @@ class NgramFieldTestCase(TestCase):
         mock.tag = mock_tag
         tag_name = NgramField(model_attr='tag__name')
 
-        self.assertEqual(tag_name.prepare(mock), u'primary')
+        self.assertEqual(tag_name.prepare(mock), 'primary')
 
         # Use the default.
         mock = MockModel()
         author = NgramField(model_attr='author', default='')
 
-        self.assertEqual(author.prepare(mock), u'')
+        self.assertEqual(author.prepare(mock), '')
 
         # Simulate failed lookups.
         mock_tag = MockTag.objects.create(name='primary')
@@ -139,7 +141,7 @@ class EdgeNgramFieldTestCase(TestCase):
         mock.user = 'daniel'
         author = EdgeNgramField(model_attr='user')
 
-        self.assertEqual(author.prepare(mock), u'daniel')
+        self.assertEqual(author.prepare(mock), 'daniel')
 
         # Do a lookup through the relation.
         mock_tag = MockTag.objects.create(name='primary')
@@ -148,13 +150,13 @@ class EdgeNgramFieldTestCase(TestCase):
         mock.tag = mock_tag
         tag_name = EdgeNgramField(model_attr='tag__name')
 
-        self.assertEqual(tag_name.prepare(mock), u'primary')
+        self.assertEqual(tag_name.prepare(mock), 'primary')
 
         # Use the default.
         mock = MockModel()
         author = EdgeNgramField(model_attr='author', default='')
 
-        self.assertEqual(author.prepare(mock), u'')
+        self.assertEqual(author.prepare(mock), '')
 
         # Simulate failed lookups.
         mock_tag = MockTag.objects.create(name='primary')
@@ -405,15 +407,15 @@ class CharFieldWithTemplateTestCase(TestCase):
 
         template3 = CharField(use_template=True)
         template3.instance_name = 'template'
-        self.assertEqual(template3.prepare(mock), u'Indexed!\n1')
+        self.assertEqual(template3.prepare(mock), 'Indexed!\n1')
 
         template4 = CharField(use_template=True, template_name='search/indexes/foo.txt')
         template4.instance_name = 'template'
-        self.assertEqual(template4.prepare(mock), u'FOO!\n')
+        self.assertEqual(template4.prepare(mock), 'FOO!\n')
 
         template5 = CharField(use_template=True, template_name=['foo.txt', 'search/indexes/bar.txt'])
         template5.instance_name = 'template'
-        self.assertEqual(template5.prepare(mock), u'BAR!\n')
+        self.assertEqual(template5.prepare(mock), 'BAR!\n')
 
 
 ##############################################################################
@@ -456,7 +458,7 @@ class FacetCharFieldTestCase(TestCase):
         mock.user = 'daniel'
         author = FacetCharField(model_attr='user')
 
-        self.assertEqual(author.prepare(mock), u'daniel')
+        self.assertEqual(author.prepare(mock), 'daniel')
 
 
 class FacetIntegerFieldTestCase(TestCase):

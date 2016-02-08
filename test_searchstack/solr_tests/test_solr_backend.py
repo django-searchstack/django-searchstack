@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
 import datetime
 import logging as std_logging
 import os
@@ -54,7 +56,7 @@ class SolrMockSearchIndexWithSkipDocument(SolrMockSearchIndex):
         def prepare_text(self, obj):
             if obj.author == 'daniel3':
                 raise SkipDocument
-            return u"Indexed!\n%s" % obj.id
+            return "Indexed!\n%s" % obj.id
 
 
 class SolrMockOverriddenFieldNameSearchIndex(indexes.SearchIndex, indexes.Indexable):
@@ -100,7 +102,7 @@ class SolrAnotherMockModelSearchIndex(indexes.SearchIndex, indexes.Indexable):
         return AnotherMockModel
 
     def prepare_text(self, obj):
-        return u"You might be searching for the user %s" % obj.author
+        return "You might be searching for the user %s" % obj.author
 
 
 class SolrBoostMockSearchIndex(indexes.SearchIndex, indexes.Indexable):
@@ -192,7 +194,7 @@ class SolrQuotingMockSearchIndex(indexes.SearchIndex, indexes.Indexable):
         return MockModel
 
     def prepare_text(self, obj):
-        return u"""Don't panic but %s has been iñtërnâtiônàlizéð""" % obj.author
+        return """Don't panic but %s has been iñtërnâtiônàlizéð""" % obj.author
 
 
 class SolrSearchBackendTestCase(TestCase):
@@ -419,7 +421,7 @@ class SolrSearchBackendTestCase(TestCase):
         self.assertEqual(results['hits'], 1)
 
         # Ensure that swapping the ``result_class`` works.
-        self.assertTrue(isinstance(self.sb.search(u'index document', result_class=MockSearchResult)['results'][0], MockSearchResult))
+        self.assertTrue(isinstance(self.sb.search('index document', result_class=MockSearchResult)['results'][0], MockSearchResult))
 
         # Check the use of ``limit_to_registered_models``.
         self.assertEqual(self.sb.search('', limit_to_registered_models=False), {'hits': 0, 'results': []})
@@ -667,7 +669,7 @@ class SolrSearchBackendTestCase(TestCase):
         sb.update(smtmmi, self.sample_objs)
 
         self.assertEqual(sb.search('*:*')['hits'], 3)
-        self.assertEqual([result.month for result in sb.search('*:*')['results']], [u'02', u'02', u'02'])
+        self.assertEqual([result.month for result in sb.search('*:*')['results']], ['02', '02', '02'])
         connections['solr']._index = old_ui
 
 
@@ -745,8 +747,8 @@ class LiveSolrSearchQueryTestCase(TestCase):
 
     def test_get_spelling(self):
         self.sq.add_filter(SQ(content='Indexy'))
-        self.assertEqual(self.sq.get_spelling_suggestion(), u'(index)')
-        self.assertEqual(self.sq.get_spelling_suggestion('indexy'), u'(index)')
+        self.assertEqual(self.sq.get_spelling_suggestion(), '(index)')
+        self.assertEqual(self.sq.get_spelling_suggestion('indexy'), '(index)')
 
     def test_log_query(self):
         reset_search_queries()
@@ -771,7 +773,7 @@ class LiveSolrSearchQueryTestCase(TestCase):
             len(self.sq.get_results())
             self.assertEqual(len(connections['solr'].queries), 2)
             self.assertEqual(connections['solr'].queries[0]['query_string'], 'name:(bar)')
-            self.assertEqual(connections['solr'].queries[1]['query_string'], u'(name:(bar) AND text:(moof))')
+            self.assertEqual(connections['solr'].queries[1]['query_string'], '(name:(bar) AND text:(moof))')
 
 
 @override_settings(DEBUG=True)
@@ -825,7 +827,7 @@ class LiveSolrSearchQuerySetTestCase(TestCase):
         self.assertListEqual([i.id for i in sqs], [i.id for i in self.sqs])
         self.assertTrue(isinstance(sqs, SearchQuerySet))
         self.maxDiff = None
-        self.assertEqual(sqs[0].object.foo, u"Registering indexes in Haystack is very similar to registering models and ``ModelAdmin`` classes in the `Django admin site`_.  If you want to override the default indexing behavior for your model you can specify your own ``SearchIndex`` class.  This is useful for ensuring that future-dated or non-live content is not indexed and searchable. Our ``Note`` model has a ``pub_date`` field, so let's update our code to include our own ``SearchIndex`` to exclude indexing future-dated notes:")
+        self.assertEqual(sqs[0].object.foo, "Registering indexes in Haystack is very similar to registering models and ``ModelAdmin`` classes in the `Django admin site`_.  If you want to override the default indexing behavior for your model you can specify your own ``SearchIndex`` class.  This is useful for ensuring that future-dated or non-live content is not indexed and searchable. Our ``Note`` model has a ``pub_date`` field, so let's update our code to include our own ``SearchIndex`` to exclude indexing future-dated notes:")
 
     def test_iter(self):
         reset_search_queries()
@@ -918,7 +920,7 @@ class LiveSolrSearchQuerySetTestCase(TestCase):
 
         self.assertTrue(isinstance(sqs, SearchQuerySet))
         self.assertEqual(len(sqs.query.query_filter), 2)
-        self.assertEqual(sqs.query.build_query(), u'((foo) AND (bar))')
+        self.assertEqual(sqs.query.build_query(), '((foo) AND (bar))')
 
         # Now for something more complex...
         sqs3 = self.sqs.exclude(title='moof').filter(SQ(content='foo') | SQ(content='baz'))
@@ -927,7 +929,7 @@ class LiveSolrSearchQuerySetTestCase(TestCase):
 
         self.assertTrue(isinstance(sqs, SearchQuerySet))
         self.assertEqual(len(sqs.query.query_filter), 3)
-        self.assertEqual(sqs.query.build_query(), u'(NOT (title:(moof)) AND ((foo) OR (baz)) AND (bar))')
+        self.assertEqual(sqs.query.build_query(), '(NOT (title:(moof)) AND ((foo) OR (baz)) AND (bar))')
 
     def test___or__(self):
         sqs1 = self.sqs.filter(content='foo')
@@ -936,7 +938,7 @@ class LiveSolrSearchQuerySetTestCase(TestCase):
 
         self.assertTrue(isinstance(sqs, SearchQuerySet))
         self.assertEqual(len(sqs.query.query_filter), 2)
-        self.assertEqual(sqs.query.build_query(), u'((foo) OR (bar))')
+        self.assertEqual(sqs.query.build_query(), '((foo) OR (bar))')
 
         # Now for something more complex...
         sqs3 = self.sqs.exclude(title='moof').filter(SQ(content='foo') | SQ(content='baz'))
@@ -945,7 +947,7 @@ class LiveSolrSearchQuerySetTestCase(TestCase):
 
         self.assertTrue(isinstance(sqs, SearchQuerySet))
         self.assertEqual(len(sqs.query.query_filter), 2)
-        self.assertEqual(sqs.query.build_query(), u'((NOT (title:(moof)) AND ((foo) OR (baz))) OR (bar))')
+        self.assertEqual(sqs.query.build_query(), '((NOT (title:(moof)) AND ((foo) OR (baz))) OR (bar))')
 
     def test_auto_query(self):
         # Ensure bits in exact matches get escaped properly as well.
@@ -953,11 +955,11 @@ class LiveSolrSearchQuerySetTestCase(TestCase):
         sqs = self.sqs.auto_query('"pants:rule"')
         self.assertTrue(isinstance(sqs, SearchQuerySet))
         self.assertEqual(repr(sqs.query.query_filter), '<SQ: AND content__contains="pants:rule">')
-        self.assertEqual(sqs.query.build_query(), u'("pants\\:rule")')
+        self.assertEqual(sqs.query.build_query(), '("pants\\:rule")')
         self.assertEqual(len(sqs), 0)
 
         sqs = self.sqs.auto_query('Canon+PowerShot+ELPH+(Black)')
-        self.assertEqual(sqs.query.build_query(), u'Canon\\+PowerShot\\+ELPH\\+\\(Black\\)')
+        self.assertEqual(sqs.query.build_query(), 'Canon\\+PowerShot\\+ELPH\\+\\(Black\\)')
         sqs = sqs.filter(tags__in=['cameras', 'electronics'])
         self.assertEqual(len(sqs), 0)
 
@@ -1000,7 +1002,7 @@ class LiveSolrSearchQuerySetTestCase(TestCase):
         self.assertTrue(len(sqs) > 0)
 
         self.assertEqual(sqs[0].object.foo,
-                         u"Registering indexes in Haystack is very similar to registering models "
+                         "Registering indexes in Haystack is very similar to registering models "
                          "and ``ModelAdmin`` classes in the `Django admin site`_.  If you want to "
                          "override the default indexing behavior for your model you can specify "
                          "your own ``SearchIndex`` class.  This is useful for ensuring that "
@@ -1086,9 +1088,9 @@ class LiveSolrSearchQuerySetTestCase(TestCase):
         self.assertEqual(len(connections['solr'].queries), 5)
 
     def test_quotes_regression(self):
-        sqs = self.sqs.auto_query(u"44°48'40''N 20°28'32''E")
+        sqs = self.sqs.auto_query("44°48'40''N 20°28'32''E")
         # Should not have empty terms.
-        self.assertEqual(sqs.query.build_query(), u"(44\xb048'40''N 20\xb028'32''E)")
+        self.assertEqual(sqs.query.build_query(), "(44\xb048'40''N 20\xb028'32''E)")
         # Should not cause Solr to 500.
         try:
             sqs.count()
@@ -1096,48 +1098,48 @@ class LiveSolrSearchQuerySetTestCase(TestCase):
             self.fail("raised unexpected error: %s" % exc)
 
         sqs = self.sqs.auto_query('blazing')
-        self.assertEqual(sqs.query.build_query(), u'(blazing)')
+        self.assertEqual(sqs.query.build_query(), '(blazing)')
         self.assertEqual(sqs.count(), 0)
         sqs = self.sqs.auto_query('blazing saddles')
-        self.assertEqual(sqs.query.build_query(), u'(blazing saddles)')
+        self.assertEqual(sqs.query.build_query(), '(blazing saddles)')
         self.assertEqual(sqs.count(), 0)
         sqs = self.sqs.auto_query('"blazing saddles')
-        self.assertEqual(sqs.query.build_query(), u'(\\"blazing saddles)')
+        self.assertEqual(sqs.query.build_query(), '(\\"blazing saddles)')
         self.assertEqual(sqs.count(), 0)
         sqs = self.sqs.auto_query('"blazing saddles"')
-        self.assertEqual(sqs.query.build_query(), u'("blazing saddles")')
+        self.assertEqual(sqs.query.build_query(), '("blazing saddles")')
         self.assertEqual(sqs.count(), 0)
         sqs = self.sqs.auto_query('mel "blazing saddles"')
-        self.assertEqual(sqs.query.build_query(), u'(mel "blazing saddles")')
+        self.assertEqual(sqs.query.build_query(), '(mel "blazing saddles")')
         self.assertEqual(sqs.count(), 0)
         sqs = self.sqs.auto_query('mel "blazing \'saddles"')
-        self.assertEqual(sqs.query.build_query(), u'(mel "blazing \'saddles")')
+        self.assertEqual(sqs.query.build_query(), '(mel "blazing \'saddles")')
         self.assertEqual(sqs.count(), 0)
         sqs = self.sqs.auto_query('mel "blazing \'\'saddles"')
-        self.assertEqual(sqs.query.build_query(), u'(mel "blazing \'\'saddles")')
+        self.assertEqual(sqs.query.build_query(), '(mel "blazing \'\'saddles")')
         self.assertEqual(sqs.count(), 0)
         sqs = self.sqs.auto_query('mel "blazing \'\'saddles"\'')
-        self.assertEqual(sqs.query.build_query(), u'(mel "blazing \'\'saddles" \')')
+        self.assertEqual(sqs.query.build_query(), '(mel "blazing \'\'saddles" \')')
         self.assertEqual(sqs.count(), 0)
         sqs = self.sqs.auto_query('mel "blazing \'\'saddles"\'"')
-        self.assertEqual(sqs.query.build_query(), u'(mel "blazing \'\'saddles" \'\\")')
+        self.assertEqual(sqs.query.build_query(), '(mel "blazing \'\'saddles" \'\\")')
         self.assertEqual(sqs.count(), 0)
         sqs = self.sqs.auto_query('"blazing saddles" mel')
-        self.assertEqual(sqs.query.build_query(), u'("blazing saddles" mel)')
+        self.assertEqual(sqs.query.build_query(), '("blazing saddles" mel)')
         self.assertEqual(sqs.count(), 0)
         sqs = self.sqs.auto_query('"blazing saddles" mel brooks')
-        self.assertEqual(sqs.query.build_query(), u'("blazing saddles" mel brooks)')
+        self.assertEqual(sqs.query.build_query(), '("blazing saddles" mel brooks)')
         self.assertEqual(sqs.count(), 0)
         sqs = self.sqs.auto_query('mel "blazing saddles" brooks')
-        self.assertEqual(sqs.query.build_query(), u'(mel "blazing saddles" brooks)')
+        self.assertEqual(sqs.query.build_query(), '(mel "blazing saddles" brooks)')
         self.assertEqual(sqs.count(), 0)
         sqs = self.sqs.auto_query('mel "blazing saddles" "brooks')
-        self.assertEqual(sqs.query.build_query(), u'(mel "blazing saddles" \\"brooks)')
+        self.assertEqual(sqs.query.build_query(), '(mel "blazing saddles" \\"brooks)')
         self.assertEqual(sqs.count(), 0)
 
     def test_query_generation(self):
         sqs = self.sqs.filter(SQ(content=AutoQuery("hello world")) | SQ(title=AutoQuery("hello world")))
-        self.assertEqual(sqs.query.build_query(), u"((hello world) OR title:(hello world))")
+        self.assertEqual(sqs.query.build_query(), "((hello world) OR title:(hello world))")
 
     def test_result_class(self):
         # Assert that we're defaulting to ``SearchResult``.
@@ -1430,5 +1432,5 @@ class LiveSolrContentExtractionTestCase(TestCase):
         data = self.sb.extract_file_contents(f)
 
         self.assertTrue("haystack" in data['contents'])
-        self.assertEqual(data['metadata']['Content-Type'], [u'application/pdf'])
+        self.assertEqual(data['metadata']['Content-Type'], ['application/pdf'])
         self.assertTrue(any(i for i in data['metadata']['Keywords'] if 'SolrCell' in i))

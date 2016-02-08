@@ -1,4 +1,6 @@
 # encoding: utf-8
+from __future__ import unicode_literals
+
 import re
 
 from django.template import loader
@@ -6,7 +8,6 @@ from django.utils import datetime_safe, six
 
 from .exceptions import SearchFieldError
 from .utils import get_model_ct_tuple
-
 
 # FIXME: use dateutil instead?
 DATETIME_REGEX = re.compile('^(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2})(T|\s+)(?P<hour>\d{2}):(?P<minute>\d{2}):(?P<second>\d{2}).*?$')
@@ -449,3 +450,4 @@ class FacetDateTimeField(FacetField, DateTimeField):
 
 class FacetMultiValueField(FacetField, MultiValueField):
     pass
+

@@ -1,4 +1,6 @@
 # encoding: utf-8
+from __future__ import unicode_literals
+
 from threading import Thread
 
 from django import forms
@@ -62,7 +64,7 @@ class SearchViewTestCase(TestCase):
         self.assertIn('page', response.context)
         self.assertNotIn('page_obj', response.context)
         self.assertEqual(len(response.context[-1]['page'].object_list), 3)
-        self.assertEqual(response.context[-1]['page'].object_list[0].content_type(), u'core.mockmodel')
+        self.assertEqual(response.context[-1]['page'].object_list[0].content_type(), 'core.mockmodel')
         self.assertEqual(response.context[-1]['page'].object_list[0].pk, '1')
 
     def test_invalid_page(self):
@@ -82,8 +84,8 @@ class SearchViewTestCase(TestCase):
         self.assertTrue(isinstance(form, InitialedSearchForm))
         self.assertEqual(form.fields['q'].initial, 'Search for...')
         para = form.as_p()
-        self.assertTrue(u'<label for="id_q">Search:</label>' in para)
-        self.assertTrue(u'value="Search for..."' in para)
+        self.assertTrue('<label for="id_q">Search:</label>' in para)
+        self.assertTrue('value="Search for..."' in para)
 
     def test_pagination(self):
         response = self.client.get(reverse('searchstack_search'), {'q': 'haystack', 'page': 0})
@@ -237,7 +239,7 @@ class FacetedSearchViewTestCase(TestCase):
         fsv.request = HttpRequest()
         fsv.request.GET = QueryDict('selected_facets=author:daniel&selected_facets=author:chris')
         fsv.form = fsv.build_form()
-        self.assertEqual(fsv.form.selected_facets, [u'author:daniel', u'author:chris'])
+        self.assertEqual(fsv.form.selected_facets, ['author:daniel', 'author:chris'])
 
 
 class BasicSearchViewTestCase(TestCase):
@@ -272,9 +274,9 @@ class BasicSearchViewTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(type(response.context[-1]['form']), ModelSearchForm)
         self.assertEqual(len(response.context[-1]['page'].object_list), 3)
-        self.assertEqual(response.context[-1]['page'].object_list[0].content_type(), u'core.mockmodel')
+        self.assertEqual(response.context[-1]['page'].object_list[0].content_type(), 'core.mockmodel')
         self.assertEqual(response.context[-1]['page'].object_list[0].pk, '1')
-        self.assertEqual(response.context[-1]['query'], u'haystack')
+        self.assertEqual(response.context[-1]['query'], 'haystack')
 
     def test_invalid_page(self):
         response = self.client.get(reverse('searchstack_basic_search'), {'q': 'haystack', 'page': '165233'})

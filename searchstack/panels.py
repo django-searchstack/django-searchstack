@@ -1,4 +1,6 @@
 # encoding: utf-8
+from __future__ import unicode_literals
+
 from debug_toolbar.panels import DebugPanel
 from django.template.loader import render_to_string
 from django.utils import six

@@ -1,4 +1,6 @@
 # encoding: utf-8
+from __future__ import unicode_literals
+
 import elasticsearch
 from django.conf import settings
 from django.test import TestCase

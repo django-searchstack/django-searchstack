@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
 import copy
 from copy import deepcopy
 from time import time
@@ -752,10 +754,10 @@ class BaseSearchQuery(object):
         if ' ' in query_string:
             query_string = "(%s)" % query_string
 
-        return u"NOT %s" % query_string
+        return "NOT %s" % query_string
 
     def build_exact_query(self, query_string):
-        return u'"%s"' % query_string
+        return '"%s"' % query_string
 
     def add_filter(self, query_filter, use_or=False):
         """

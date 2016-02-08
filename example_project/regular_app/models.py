@@ -1,4 +1,6 @@
 # encoding: utf-8
+from __future__ import unicode_literals
+
 import datetime
 
 from django.db import models
@@ -31,7 +33,7 @@ class Dog(models.Model):
 
     def full_name(self):
         if self.owner_last_name:
-            return u"%s %s" % (self.name, self.owner_last_name)
+            return "%s %s" % (self.name, self.owner_last_name)
 
         return self.name
 
@@ -41,4 +43,4 @@ class Toy(models.Model):
     name = models.CharField(max_length=60)
 
     def __unicode__(self):
-        return u"%s's %s" % (self.dog.name, self.name)
+        return "%s's %s" % (self.dog.name, self.name)

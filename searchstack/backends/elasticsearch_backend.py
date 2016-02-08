@@ -1,4 +1,6 @@
 # encoding: utf-8
+from __future__ import unicode_literals
+
 import datetime
 import re
 import warnings
@@ -176,7 +178,7 @@ class ElasticsearchSearchBackend(BaseSearchBackend):
 
                 prepped_docs.append(final_data)
             except SkipDocument:
-                self.log.debug(u"Indexing for object `%s` skipped", obj)
+                self.log.debug("Indexing for object `%s` skipped", obj)
             except elasticsearch.TransportError as e:
                 if not self.silently_fail:
                     raise
@@ -184,7 +186,7 @@ class ElasticsearchSearchBackend(BaseSearchBackend):
                 # We'll log the object identifier but won't include the actual object
                 # to avoid the possibility of that generating encoding errors while
                 # processing the log message:
-                self.log.error(u"%s while preparing object for update" % e.__class__.__name__, exc_info=True,
+                self.log.error("%s while preparing object for update" % e.__class__.__name__, exc_info=True,
                                extra={"data": {"index": index,
                                                "object": get_identifier(obj)}})
 
@@ -777,17 +779,17 @@ class ElasticsearchSearchQuery(BaseSearchQuery):
         if field == 'content':
             index_fieldname = ''
         else:
-            index_fieldname = u'%s:' % connections[self._using].get_unified_index().get_index_fieldname(field)
+            index_fieldname = '%s:' % connections[self._using].get_unified_index().get_index_fieldname(field)
 
         filter_types = {
-            'contains': u'%s',
-            'startswith': u'%s*',
-            'exact': u'%s',
-            'gt': u'{%s TO *}',
-            'gte': u'[%s TO *]',
-            'lt': u'{* TO %s}',
-            'lte': u'[* TO %s]',
-            'fuzzy': u'%s~',
+            'contains': '%s',
+            'startswith': '%s*',
+            'exact': '%s',
+            'gt': '{%s TO *}',
+            'gte': '[%s TO *]',
+            'lt': '{* TO %s}',
+            'lte': '[* TO %s]',
+            'fuzzy': '%s~',
         }
 
         if value.post_process is False:
@@ -809,18 +811,18 @@ class ElasticsearchSearchQuery(BaseSearchQuery):
                     if len(terms) == 1:
                         query_frag = terms[0]
                     else:
-                        query_frag = u"(%s)" % " AND ".join(terms)
+                        query_frag = "(%s)" % " AND ".join(terms)
             elif filter_type == 'in':
                 in_options = []
 
                 for possible_value in prepared_value:
-                    in_options.append(u'"%s"' % self.backend._from_python(possible_value))
+                    in_options.append('"%s"' % self.backend._from_python(possible_value))
 
-                query_frag = u"(%s)" % " OR ".join(in_options)
+                query_frag = "(%s)" % " OR ".join(in_options)
             elif filter_type == 'range':
                 start = self.backend._from_python(prepared_value[0])
                 end = self.backend._from_python(prepared_value[1])
-                query_frag = u'["%s" TO "%s"]' % (start, end)
+                query_frag = '["%s" TO "%s"]' % (start, end)
             elif filter_type == 'exact':
                 if value.input_type_name == 'exact':
                     query_frag = prepared_value
@@ -837,7 +839,7 @@ class ElasticsearchSearchQuery(BaseSearchQuery):
             if not query_frag.startswith('(') and not query_frag.endswith(')'):
                 query_frag = "(%s)" % query_frag
 
-        return u"%s%s" % (index_fieldname, query_frag)
+        return "%s%s" % (index_fieldname, query_frag)
 
     def build_alt_parser_query(self, parser_name, query_string='', **kwargs):
         if query_string:
@@ -847,11 +849,11 @@ class ElasticsearchSearchQuery(BaseSearchQuery):
 
         for key in sorted(kwargs.keys()):
             if isinstance(kwargs[key], six.string_types) and ' ' in kwargs[key]:
-                kwarg_bits.append(u"%s='%s'" % (key, kwargs[key]))
+                kwarg_bits.append("%s='%s'" % (key, kwargs[key]))
             else:
-                kwarg_bits.append(u"%s=%s" % (key, kwargs[key]))
+                kwarg_bits.append("%s=%s" % (key, kwargs[key]))
 
-        return u"{!%s %s}" % (parser_name, ' '.join(kwarg_bits))
+        return "{!%s %s}" % (parser_name, ' '.join(kwarg_bits))
 
     def build_params(self, spelling_query=None, **kwargs):
         search_kwargs = {

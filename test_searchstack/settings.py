@@ -1,4 +1,6 @@
 # encoding: utf-8
+from __future__ import unicode_literals
+
 SECRET_KEY = "Please do not spew DeprecationWarnings"
 
 # Haystack settings for running tests.

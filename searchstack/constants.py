@@ -1,4 +1,6 @@
 # encoding: utf-8
+from __future__ import unicode_literals
+
 from django.conf import settings
 
 DEFAULT_ALIAS = 'default'
@@ -24,6 +26,7 @@ REPR_OUTPUT_SIZE = 20
 
 # Number of SearchResults to load at a time.
 ITERATOR_LOAD_PER_QUERY = getattr(settings, 'SEARCHSTACK_ITERATOR_LOAD_PER_QUERY', 10)
+
 
 # A marker class in the hierarchy to indicate that it handles search data.
 class Indexable(object):

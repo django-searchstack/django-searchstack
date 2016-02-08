@@ -1,4 +1,6 @@
 # encoding: utf-8
+from __future__ import unicode_literals
+
 import argparse
 
 from django.core.exceptions import ImproperlyConfigured

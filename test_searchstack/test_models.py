@@ -1,4 +1,6 @@
 # encoding: utf-8
+from __future__ import unicode_literals
+
 import logging as std_logging
 import pickle
 
@@ -50,8 +52,8 @@ class SearchResultTestCase(TestCase):
         self.assertEqual(self.no_data_sr.app_label, 'searchstack')
         self.assertEqual(self.no_data_sr.model_name, 'mockmodel')
         self.assertEqual(self.no_data_sr.model, MockModel)
-        self.assertEqual(self.no_data_sr.verbose_name, u'Mock model')
-        self.assertEqual(self.no_data_sr.verbose_name_plural, u'Mock models')
+        self.assertEqual(self.no_data_sr.verbose_name, 'Mock model')
+        self.assertEqual(self.no_data_sr.verbose_name_plural, 'Mock models')
         self.assertEqual(self.no_data_sr.pk, '1')
         self.assertEqual(self.no_data_sr.score, 2)
         self.assertEqual(self.no_data_sr.stored, None)
@@ -59,8 +61,8 @@ class SearchResultTestCase(TestCase):
         self.assertEqual(self.extra_data_sr.app_label, 'searchstack')
         self.assertEqual(self.extra_data_sr.model_name, 'mockmodel')
         self.assertEqual(self.extra_data_sr.model, MockModel)
-        self.assertEqual(self.extra_data_sr.verbose_name, u'Mock model')
-        self.assertEqual(self.extra_data_sr.verbose_name_plural, u'Mock models')
+        self.assertEqual(self.extra_data_sr.verbose_name, 'Mock model')
+        self.assertEqual(self.extra_data_sr.verbose_name_plural, 'Mock models')
         self.assertEqual(self.extra_data_sr.pk, '1')
         self.assertEqual(self.extra_data_sr.score, 3)
         self.assertEqual(self.extra_data_sr.stored, 'I am stored data. How fun.')
@@ -68,8 +70,8 @@ class SearchResultTestCase(TestCase):
         self.assertEqual(self.no_overwrite_data_sr.app_label, 'searchstack')
         self.assertEqual(self.no_overwrite_data_sr.model_name, 'mockmodel')
         self.assertEqual(self.no_overwrite_data_sr.model, MockModel)
-        self.assertEqual(self.no_overwrite_data_sr.verbose_name, u'Mock model')
-        self.assertEqual(self.no_overwrite_data_sr.verbose_name_plural, u'Mock models')
+        self.assertEqual(self.no_overwrite_data_sr.verbose_name, 'Mock model')
+        self.assertEqual(self.no_overwrite_data_sr.verbose_name_plural, 'Mock models')
         self.assertEqual(self.no_overwrite_data_sr.pk, '1')
         self.assertEqual(self.no_overwrite_data_sr.score, 4)
         self.assertEqual(self.no_overwrite_data_sr.stored, 'I am stored data. How fun.')
@@ -80,14 +82,14 @@ class SearchResultTestCase(TestCase):
         self.assertEqual(self.no_overwrite_data_sr.get_additional_fields(), {'django_ct': 'searchstack.anothermockmodel', 'django_id': 2, 'stored': 'I am stored data. How fun.'})
 
     def test_unicode(self):
-        self.assertEqual(self.no_data_sr.__unicode__(), u"<SearchResult: searchstack.mockmodel (pk='1')>")
-        self.assertEqual(self.extra_data_sr.__unicode__(), u"<SearchResult: searchstack.mockmodel (pk='1')>")
-        self.assertEqual(self.no_overwrite_data_sr.__unicode__(), u"<SearchResult: searchstack.mockmodel (pk='1')>")
+        self.assertEqual(self.no_data_sr.__unicode__(), "<SearchResult: searchstack.mockmodel (pk='1')>")
+        self.assertEqual(self.extra_data_sr.__unicode__(), "<SearchResult: searchstack.mockmodel (pk='1')>")
+        self.assertEqual(self.no_overwrite_data_sr.__unicode__(), "<SearchResult: searchstack.mockmodel (pk='1')>")
 
     def test_content_type(self):
-        self.assertEqual(self.no_data_sr.content_type(), u'core.mockmodel')
-        self.assertEqual(self.extra_data_sr.content_type(), u'core.mockmodel')
-        self.assertEqual(self.no_overwrite_data_sr.content_type(), u'core.mockmodel')
+        self.assertEqual(self.no_data_sr.content_type(), 'core.mockmodel')
+        self.assertEqual(self.extra_data_sr.content_type(), 'core.mockmodel')
+        self.assertEqual(self.no_overwrite_data_sr.content_type(), 'core.mockmodel')
 
     def test_stored_fields(self):
         # Stow.
@@ -137,16 +139,16 @@ class SearchResultTestCase(TestCase):
         CaptureHandler.logs_seen = []
         self.assertEqual(awol1.model, MockModel)
         self.assertEqual(awol1.object, None)
-        self.assertEqual(awol1.verbose_name, u'Mock model')
-        self.assertEqual(awol1.verbose_name_plural, u'Mock models')
+        self.assertEqual(awol1.verbose_name, 'Mock model')
+        self.assertEqual(awol1.verbose_name_plural, 'Mock models')
         self.assertEqual(awol1.stored, None)
         self.assertEqual(len(CaptureHandler.logs_seen), 4)
 
         CaptureHandler.logs_seen = []
         self.assertEqual(awol2.model, None)
         self.assertEqual(awol2.object, None)
-        self.assertEqual(awol2.verbose_name, u'')
-        self.assertEqual(awol2.verbose_name_plural, u'')
+        self.assertEqual(awol2.verbose_name, '')
+        self.assertEqual(awol2.verbose_name_plural, '')
         self.assertEqual(awol2.stored, None)
         self.assertEqual(len(CaptureHandler.logs_seen), 12)
 

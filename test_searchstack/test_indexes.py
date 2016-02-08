@@ -1,4 +1,6 @@
 # encoding: utf-8
+from __future__ import unicode_literals
+
 import datetime
 import time
 from threading import Thread
@@ -149,32 +151,32 @@ class SearchIndexTestCase(TestCase):
         connections['default']._index = self.ui
 
         self.sample_docs = {
-            u'core.mockmodel.1': {
-                'text': u'Indexed!\n1',
-                'django_id': u'1',
-                'django_ct': u'core.mockmodel',
-                'extra': u'Stored!\n1',
-                'author': u'daniel1',
+            'core.mockmodel.1': {
+                'text': 'Indexed!\n1',
+                'django_id': '1',
+                'django_ct': 'core.mockmodel',
+                'extra': 'Stored!\n1',
+                'author': 'daniel1',
                 'pub_date': datetime.datetime(2009, 3, 17, 6, 0),
-                'id': u'core.mockmodel.1'
+                'id': 'core.mockmodel.1'
             },
-            u'core.mockmodel.2': {
-                'text': u'Indexed!\n2',
-                'django_id': u'2',
-                'django_ct': u'core.mockmodel',
-                'extra': u'Stored!\n2',
-                'author': u'daniel2',
+            'core.mockmodel.2': {
+                'text': 'Indexed!\n2',
+                'django_id': '2',
+                'django_ct': 'core.mockmodel',
+                'extra': 'Stored!\n2',
+                'author': 'daniel2',
                 'pub_date': datetime.datetime(2009, 3, 17, 7, 0),
-                'id': u'core.mockmodel.2'
+                'id': 'core.mockmodel.2'
             },
-            u'core.mockmodel.3': {
-                'text': u'Indexed!\n3',
-                'django_id': u'3',
-                'django_ct': u'core.mockmodel',
-                'extra': u'Stored!\n3',
-                'author': u'daniel3',
+            'core.mockmodel.3': {
+                'text': 'Indexed!\n3',
+                'django_id': '3',
+                'django_ct': 'core.mockmodel',
+                'extra': 'Stored!\n3',
+                'author': 'daniel3',
                 'pub_date': datetime.datetime(2009, 3, 17, 8, 0),
-                'id': u'core.mockmodel.3'
+                'id': 'core.mockmodel.3'
             }
         }
 
@@ -326,8 +328,8 @@ class SearchIndexTestCase(TestCase):
 
         mock_1_result = index_queue.get()
         mock_2_result = index_queue.get()
-        self.assertEqual(mock_1_result, u'foo')
-        self.assertEqual(mock_2_result, u'daniel21')
+        self.assertEqual(mock_1_result, 'foo')
+        self.assertEqual(mock_2_result, 'daniel21')
 
     def test_custom_prepare_author(self):
         mock = MockModel()
@@ -354,7 +356,7 @@ class SearchIndexTestCase(TestCase):
 
         self.assertEqual(len(self.cmi.full_prepare(mock)), 11)
         self.assertEqual(sorted(self.cmi.full_prepare(mock).keys()), ['author', 'author_exact', 'django_ct', 'django_id', 'extra', 'hello', 'id', 'pub_date', 'pub_date_exact', 'text', 'whee'])
-        self.assertEqual(self.cmi.prepared_data['hello'], u'World!')
+        self.assertEqual(self.cmi.prepared_data['hello'], 'World!')
 
     def test_custom_index_fieldname(self):
         mock = MockModel()
@@ -365,7 +367,7 @@ class SearchIndexTestCase(TestCase):
         cofnmi = GoodOverriddenFieldNameMockSearchIndex()
         self.assertEqual(len(cofnmi.prepare(mock)), 6)
         self.assertEqual(sorted(cofnmi.prepare(mock).keys()), ['django_ct', 'django_id', 'hello', 'id', 'more_content', 'name_s'])
-        self.assertEqual(cofnmi.prepared_data['name_s'], u'daniel20')
+        self.assertEqual(cofnmi.prepared_data['name_s'], 'daniel20')
         self.assertEqual(cofnmi.get_content_field(), 'more_content')
 
     def test_get_content_field(self):
@@ -388,7 +390,7 @@ class SearchIndexTestCase(TestCase):
         mock.pub_date = datetime.datetime(2009, 1, 31, 4, 19, 0)
 
         self.mi.update_object(mock)
-        self.assertEqual([(res.content_type(), res.pk) for res in self.sb.search('*')['results']], [(u'core.mockmodel', u'20')])
+        self.assertEqual([(res.content_type(), res.pk) for res in self.sb.search('*')['results']], [('core.mockmodel', '20')])
         self.sb.clear()
 
     def test_remove_object(self):
@@ -404,7 +406,7 @@ class SearchIndexTestCase(TestCase):
         self.assertEqual(self.sb.search('*')['hits'], 4)
 
         self.mi.remove_object(mock)
-        self.assertEqual([(res.content_type(), res.pk) for res in self.sb.search('*')['results']], [(u'core.mockmodel', u'1'), (u'core.mockmodel', u'2'), (u'core.mockmodel', u'3')])
+        self.assertEqual([(res.content_type(), res.pk) for res in self.sb.search('*')['results']], [('core.mockmodel', '1'), ('core.mockmodel', '2'), ('core.mockmodel', '3')])
 
         # Put it back so we can test passing kwargs.
         mock = MockModel()
@@ -416,7 +418,7 @@ class SearchIndexTestCase(TestCase):
         self.assertEqual(self.sb.search('*')['hits'], 4)
 
         self.mi.remove_object(mock, commit=False)
-        self.assertEqual([(res.content_type(), res.pk) for res in self.sb.search('*')['results']], [(u'core.mockmodel', u'1'), (u'core.mockmodel', u'2'), (u'core.mockmodel', u'3'), (u'core.mockmodel', u'20')])
+        self.assertEqual([(res.content_type(), res.pk) for res in self.sb.search('*')['results']], [('core.mockmodel', '1'), ('core.mockmodel', '2'), ('core.mockmodel', '3'), ('core.mockmodel', '20')])
 
         self.sb.clear()
 
@@ -429,7 +431,7 @@ class SearchIndexTestCase(TestCase):
 
     def test_reindex(self):
         self.mi.reindex()
-        self.assertEqual([(res.content_type(), res.pk) for res in self.sb.search('*')['results']], [(u'core.mockmodel', u'1'), (u'core.mockmodel', u'2'), (u'core.mockmodel', u'3')])
+        self.assertEqual([(res.content_type(), res.pk) for res in self.sb.search('*')['results']], [('core.mockmodel', '1'), ('core.mockmodel', '2'), ('core.mockmodel', '3')])
         self.sb.clear()
 
     def test_inheritance(self):
@@ -494,7 +496,7 @@ class SearchIndexTestCase(TestCase):
         prepared_data = self.gfmsi.full_prepare(mock)
         self.assertEqual(len(prepared_data), 8)
         self.assertEqual(sorted(prepared_data.keys()), ['author', 'author_foo', 'django_ct', 'django_id', 'id', 'pub_date', 'pub_date_exact', 'text'])
-        self.assertEqual(prepared_data['author_foo'], u"Hi, I'm daniel")
+        self.assertEqual(prepared_data['author_foo'], "Hi, I'm daniel")
         self.assertEqual(prepared_data['pub_date_exact'], '2010-10-26T01:54:32')
 
 
